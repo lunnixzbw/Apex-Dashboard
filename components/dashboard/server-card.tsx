@@ -77,13 +77,13 @@ export const ServerCard = ({
             {name}
           </h3>
           <div className="flex items-center gap-4 mt-6">
-            <div className="flex items-center gap-2 bg-site-ink/[5] px-4 py-2 rounded-2xl border border-site-ink/5 shadow-inner">
+            <div className="flex items-center gap-2 bg-site-ink/[0.05] px-4 py-2 rounded-2xl border border-site-ink/5 shadow-inner">
               <Users className="h-4 w-4 text-primary" />
               <span className="text-xs font-black text-site-ink tabular-nums">
                 {memberCount.toLocaleString()}
               </span>
             </div>
-            <div className="flex items-center gap-2 bg-site-ink/[5] px-4 py-2 rounded-2xl border border-site-ink/5">
+            <div className="flex items-center gap-2 bg-site-ink/[0.05] px-4 py-2 rounded-2xl border border-site-ink/5">
               <Hash className="h-4 w-4 text-site-faint" />
               <span className="text-[10px] font-black uppercase tracking-widest text-site-muted">
                 Managed
@@ -93,7 +93,7 @@ export const ServerCard = ({
         </div>
       </div>
 
-      <div className="px-8 py-6 bg-site-card/40 border-t border-site-ink/[5] group-hover:bg-primary/5 transition-all">
+      <div className="px-8 py-6 bg-site-card/40 border-t border-site-ink/[0.05] group-hover:bg-primary/5 transition-all">
         <Link href={`/dashboard/guild/${id}`} className="block">
           <Button className="w-full justify-between group/btn py-7 rounded-2xl border-site-ink/15 font-black uppercase tracking-tighter text-xs" variant="secondary">
             <span>Access Dashboard</span>

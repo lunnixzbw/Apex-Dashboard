@@ -96,7 +96,7 @@ export default function LeaderboardPage({ params }: { params: { guildId: string 
             <div key={user.user_id} className={cn(
                "relative p-8 rounded-[40px] border flex flex-col items-center text-center overflow-hidden transition-all hover:scale-[1.02]",
                i === 0 ? "bg-gradient-to-b from-amber-500/20 to-transparent border-amber-500/30 md:-translate-y-4 order-1 md:order-2" : 
-               i === 1 ? "bg-gradient-to-b from-site-card to-transparent border-site-ink/[5] order-2 md:order-1" : 
+               i === 1 ? "bg-gradient-to-b from-site-card to-transparent border-site-ink/[0.05] order-2 md:order-1" : 
                "bg-gradient-to-b from-amber-800/20 to-transparent border-amber-900/20 order-3"
             )}>
                <div className="absolute top-0 right-0 p-4">
@@ -140,7 +140,7 @@ export default function LeaderboardPage({ params }: { params: { guildId: string 
                 <th className="px-8 py-6 text-[10px] font-black uppercase text-site-faint tracking-[0.2em] text-right">Total XP</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-site-ink/[5]">
+            <tbody className="divide-y divide-site-ink/[0.05]">
               {filteredData.slice(3).map((entry, i) => (
                 <tr key={entry.user_id} className="group hover:bg-site-ink/[0.02] transition-colors">
                   <td className="px-8 py-6">
@@ -150,7 +150,7 @@ export default function LeaderboardPage({ params }: { params: { guildId: string 
                   </td>
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                       <div className="h-10 w-10 rounded-xl bg-site-ink/[5] border border-site-ink/[7.5] flex items-center justify-center">
+                       <div className="h-10 w-10 rounded-xl bg-site-ink/[0.05] border border-site-ink/[0.075] flex items-center justify-center">
                           <User className="h-5 w-5 text-site-faint" />
                        </div>
                        <div className="flex flex-col">

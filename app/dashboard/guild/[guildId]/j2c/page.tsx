@@ -23,7 +23,7 @@ export const revalidate = 0; // Never cache this page
 
 
 const J2CForm = dynamic(() => import("@/components/dashboard/j2c-form").then(mod => mod.J2CForm), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[2] rounded-3xl" />
+  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[0.02] rounded-3xl" />
 });
 
 export default async function J2CPage({ params }: { params: { guildId: string } }) {

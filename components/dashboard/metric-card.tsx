@@ -61,7 +61,7 @@ export const MetricCard = ({
              <p className="text-[10px] text-site-faint mt-2 italic font-medium">{description}</p>
           )}
         </div>
-        <div className="p-4 bg-site-ink/[5] rounded-2xl group-hover:scale-110 group-hover:bg-primary/10 transition-all border border-site-ink/5">
+        <div className="p-4 bg-site-ink/[0.05] rounded-2xl group-hover:scale-110 group-hover:bg-primary/10 transition-all border border-site-ink/5">
           <Icon className="h-6 w-6 text-primary" />
         </div>
       </div>

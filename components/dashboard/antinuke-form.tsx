@@ -184,7 +184,7 @@ export function AntiNukeForm({ initialConfig, guildId }: AntiNukeFormProps) {
                   <p className="text-xs text-site-faint italic text-center py-4">No users whitelisted.</p>
                 ) : (
                   whitelistedUsers.map(userId => (
-                    <div key={userId} className="flex items-center justify-between p-3 rounded-xl bg-site-card/30 border border-site-ink/[5]">
+                    <div key={userId} className="flex items-center justify-between p-3 rounded-xl bg-site-card/30 border border-site-ink/[0.05]">
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-site-ink/10 flex items-center justify-center">
                           <User className="h-4 w-4 text-site-muted" />

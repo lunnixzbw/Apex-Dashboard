@@ -7,7 +7,7 @@ import { api } from "@/lib/api";
 import { card, field, lbl, hint, ToggleRow, PageTitle, ChannelSelect, RoleSelect, textChannels } from "@/components/dashboard/ui-bits";
 
 const badge: Record<string, string> = {
-  pending: "bg-site-ink/[5] text-site-body", considering: "bg-amber-500/15 text-amber-400", approved: "bg-emerald-500/15 text-emerald-400",
+  pending: "bg-site-ink/[0.05] text-site-body", considering: "bg-amber-500/15 text-amber-400", approved: "bg-emerald-500/15 text-emerald-400",
   implemented: "bg-emerald-500/15 text-emerald-400", denied: "bg-site-ink/15 text-site-ink",
 };
 

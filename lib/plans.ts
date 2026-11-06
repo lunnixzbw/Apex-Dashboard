@@ -6,7 +6,8 @@ export interface Plan {
   id: string;
   product: Product;
   name: string;
-  days: number;
+  days: number; // 0 = lifetime
+  lifetime?: boolean;
   amount: number; // paise
   servers: number; // Premium only: how many servers the buyer can activate it on
   badge?: string;
@@ -17,12 +18,13 @@ const tiers = [
   { key: "monthly", name: "Monthly", days: 30 },
   { key: "quarterly", name: "3 Months", days: 90, badge: "Popular" },
   { key: "yearly", name: "Yearly", days: 365, badge: "Best value" },
+  { key: "lifetime", name: "Lifetime", days: 0, badge: "Forever" },
 ];
 const mk = (product: Product, rupees: number[]): Plan[] =>
-  tiers.map((t, i) => ({ id: `${product}_${t.key}`, product, name: t.name, days: t.days, amount: rupees[i] * 100, servers: 1, badge: t.badge }));
+  tiers.map((t, i) => ({ id: `${product}_${t.key}`, product, name: t.name, days: t.days, amount: rupees[i] * 100, servers: 1, badge: t.badge, lifetime: t.days === 0 }));
 
-export const PREMIUM_PLANS = mk("premium", [20, 80, 200, 800]);
-export const NOPREFIX_PLANS = mk("noprefix", [10, 40, 100, 300]);
+export const PREMIUM_PLANS = mk("premium", [20, 80, 200, 800, 950]);
+export const NOPREFIX_PLANS = mk("noprefix", [10, 40, 100, 300, 500]);
 export const PLANS: Plan[] = [...PREMIUM_PLANS, ...NOPREFIX_PLANS];
 
 export const CURRENCY = "INR";

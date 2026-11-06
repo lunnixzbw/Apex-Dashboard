@@ -78,15 +78,15 @@ export default function BoostPage({ params }: { params: { guildId: string } }) {
         <div className="rounded-lg border-l-4 bg-[#2b2d31] p-4" style={{ borderColor: cfg.color || "#2b2d31" }}>
           <div className="flex justify-between gap-4">
             <div className="min-w-0">
-              {cfg.title && <p className="font-bold text-site-ink">{sample(cfg.title)}</p>}
-              <p className="mt-1 whitespace-pre-wrap text-sm text-site-body">{sample(cfg.message)}</p>
+              {cfg.title && <p className="font-bold text-white">{sample(cfg.title)}</p>}
+              <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">{sample(cfg.message)}</p>
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             {cfg.thumbnail_url && /^https?:/.test(cfg.thumbnail_url) ? <img src={cfg.thumbnail_url} alt="" className="h-16 w-16 rounded-md object-cover" /> : <div className="h-16 w-16 shrink-0 rounded-md bg-site-ink/15" />}
           </div>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           {cfg.image_url && /^https?:/.test(cfg.image_url) && <img src={cfg.image_url} alt="" className="mt-3 max-h-56 rounded-md" />}
-          {cfg.footer && <p className="mt-3 text-[11px] text-site-muted">{sample(cfg.footer)}</p>}
+          {cfg.footer && <p className="mt-3 text-[11px] text-zinc-400">{sample(cfg.footer)}</p>}
         </div>
       </div>
     </div>

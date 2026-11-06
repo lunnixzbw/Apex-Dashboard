@@ -149,7 +149,7 @@ export function PremiumClient() {
       </p>
 
       {/* Plans */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {plans.map((p) => (
           <div key={p.id} className={`relative flex flex-col rounded-2xl border p-7 ${p.badge ? "border-site-ink/40 bg-site-card" : "border-site-ink/10 bg-site-card/70"}`}>
             {p.badge && <span className="absolute -top-3 left-7 rounded-full bg-site-ink px-3 py-1 text-[11px] font-semibold text-site-bg">{p.badge}</span>}
@@ -158,12 +158,12 @@ export function PremiumClient() {
               <span className="font-outfit text-4xl font-bold text-site-ink">{formatPrice(p.amount)}</span>
               <span className="text-sm text-site-faint">one-time</span>
             </div>
-            <p className="mt-1 text-xs text-site-faint">{formatPrice(Math.round(p.amount / p.days))} per day, no auto-renewal</p>
+            <p className="mt-1 text-xs text-site-faint">{p.lifetime ? "Pay once, keep it forever" : `${formatPrice(Math.round(p.amount / p.days))} per day, no auto-renewal`}</p>
             <ul className="mt-6 flex-1 space-y-2.5 text-sm text-site-muted">
-              <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {p.days} days of {label}</li>
+              <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {p.lifetime ? `Lifetime ${label}, never expires` : `${p.days} days of ${label}`}</li>
               {product === "premium" && <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> Use on {p.servers} server{p.servers > 1 ? "s" : ""}</li>}
               <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {product === "premium" ? "Every Premium feature" : "Every command, no prefix"}</li>
-              <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> Adds to time you already have</li>
+              <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {p.lifetime ? "Replaces any time-limited plan" : "Adds to time you already have"}</li>
             </ul>
             {enabled === false ? (
               <a href="/support" className="mt-7 inline-flex h-11 items-center justify-center rounded-xl bg-site-ink text-sm font-semibold text-site-bg transition hover:opacity-85">

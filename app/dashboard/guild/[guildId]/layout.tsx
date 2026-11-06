@@ -118,7 +118,7 @@ export default async function GuildLayout({
                 { label: "Roles", value: guild.role_count, icon: Shield, color: "text-emerald-400" },
                 { label: "Channels", value: guild.channel_count, icon: Hash, color: "text-purple-400" },
               ].map((item) => (
-                <div key={item.label} className="flex items-center gap-3 bg-site-ink/[5] px-5 py-3 rounded-2xl border border-site-ink/5 shadow-inner">
+                <div key={item.label} className="flex items-center gap-3 bg-site-ink/[0.05] px-5 py-3 rounded-2xl border border-site-ink/5 shadow-inner">
                   <div className={cn("p-2 rounded-lg bg-site-card/50", item.color)}>
                     <item.icon className="h-5 w-5" />
                   </div>

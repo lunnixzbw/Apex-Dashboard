@@ -115,7 +115,7 @@ export function LevelingForm({ initialConfig, guildId }: LevelingFormProps) {
                     disabled={!config.enabled}
                     className="py-6 text-lg font-bold pr-12"
                   />
-                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-700">SEC</span>
+                  <span className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-site-faint">SEC</span>
                 </div>
               </div>
             </div>

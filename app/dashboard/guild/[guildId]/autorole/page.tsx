@@ -23,7 +23,7 @@ export const revalidate = 0; // Never cache this page
 
 
 const AutoRoleForm = dynamic(() => import("@/components/dashboard/autorole-form").then(mod => mod.AutoRoleForm), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[2] rounded-3xl" />
+  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[0.02] rounded-3xl" />
 });
 
 export default async function AutoRolePage({ params }: { params: { guildId: string } }) {

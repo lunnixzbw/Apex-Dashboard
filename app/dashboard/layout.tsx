@@ -182,7 +182,7 @@ export default function DashboardLayout({
         ...(isAdmin(session?.user?.id) 
             ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }] 
             : []),
-        ...(isSupport ? [{ name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy }] : []),
+        { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];
 
   // Separate the "Back to Servers" item when inside a guild

@@ -125,7 +125,7 @@ export function WelcomeForm({ initialConfig, channels, guildId }: WelcomeFormPro
             )}
 
             {(config.welcome_type === "card" || config.welcome_type === "card_embed") && (
-              <div className="space-y-4 pt-4 border-t border-site-ink/[5]">
+              <div className="space-y-4 pt-4 border-t border-site-ink/[0.05]">
                 <div>
                   <label className="text-xs font-black uppercase text-site-faint tracking-widest pl-1">Card Background</label>
                   <Select
@@ -160,7 +160,7 @@ export function WelcomeForm({ initialConfig, channels, guildId }: WelcomeFormPro
             )}
 
             {(config.welcome_type === "embed" || config.welcome_type === "card_embed") && (
-              <div className="space-y-4 pt-4 border-t border-site-ink/[5]">
+              <div className="space-y-4 pt-4 border-t border-site-ink/[0.05]">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="text-xs font-black uppercase text-site-faint tracking-widest pl-1">Embed Title</label>

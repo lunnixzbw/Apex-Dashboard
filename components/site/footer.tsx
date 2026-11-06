@@ -21,6 +21,7 @@ export function SiteFooter({ base = "" }: { base?: string }) {
       { label: "Privacy Policy", href: h("/privacy") },
       { label: "Refund Policy", href: h("/refund") },
       { label: "Contact", href: h("/contact") },
+      { label: "My tickets", href: h("/tickets") },
     ] },
   ];
   return (

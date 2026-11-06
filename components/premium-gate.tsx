@@ -17,7 +17,7 @@ export function PremiumGate({ feature }: { feature: string }) {
           </div>
         </div>
         <h2 className="text-3xl font-extrabold uppercase tracking-wide text-site-ink">Zevion Premium</h2>
-        <p className="mt-4 text-base leading-relaxed text-zinc-500">
+        <p className="mt-4 text-base leading-relaxed text-site-muted">
           The {feature} feature requires an active premium subscription. Upgrade your server to unlock the
           ultimate Discord experience and gain access to powerful advanced tools.
         </p>
@@ -25,7 +25,7 @@ export function PremiumGate({ feature }: { feature: string }) {
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-site-ink text-base font-bold text-site-bg transition hover:bg-zinc-200"
+          className="mt-8 flex h-14 w-full items-center justify-center rounded-2xl bg-site-ink text-base font-bold text-site-bg transition hover:opacity-85"
         >
           Upgrade to Premium
         </a>

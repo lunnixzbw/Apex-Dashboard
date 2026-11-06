@@ -77,3 +77,17 @@ body {
 html.dark { color-scheme: dark; }
 select { background-color: rgb(var(--site-card)); color: rgb(var(--site-ink)); }
 select option, select optgroup { background-color: rgb(var(--site-card)); color: rgb(var(--site-ink)); }
+
+/* Zevion loading animation */
+@keyframes zv-ring { 0% { transform: scale(0.9); opacity: 0.55; } 100% { transform: scale(1.7); opacity: 0; } }
+@keyframes zv-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+@keyframes zv-bar { 0% { transform: translateX(-100%); } 100% { transform: translateX(260%); } }
+@keyframes zv-shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+.zv-ring { animation: zv-ring 2s cubic-bezier(0.2, 0.6, 0.3, 1) infinite; }
+.zv-float { animation: zv-float 2.4s ease-in-out infinite; }
+.zv-bar { animation: zv-bar 1.4s ease-in-out infinite; }
+.zv-skel {
+  background: linear-gradient(90deg, rgb(var(--site-ink) / 0.04) 25%, rgb(var(--site-ink) / 0.09) 50%, rgb(var(--site-ink) / 0.04) 75%);
+  background-size: 800px 100%; animation: zv-shimmer 1.6s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) { .zv-ring, .zv-float, .zv-bar, .zv-skel { animation: none; } }

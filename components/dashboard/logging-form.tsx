@@ -108,7 +108,7 @@ export function LoggingForm({ initialConfig, channels, guildId }: LoggingFormPro
             <div key={cat.id} className="bg-site-card border border-site-ink/10 p-8 rounded-[40px] shadow-xl hover:border-primary/20 transition-all group">
                <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
                   <div className="flex items-start gap-5">
-                     <div className="h-14 w-14 rounded-2xl bg-site-ink/[5] flex items-center justify-center text-site-muted group-hover:text-primary transition-colors border border-site-ink/5 shrink-0">
+                     <div className="h-14 w-14 rounded-2xl bg-site-ink/[0.05] flex items-center justify-center text-site-muted group-hover:text-primary transition-colors border border-site-ink/5 shrink-0">
                         <cat.icon className="h-7 w-7" />
                      </div>
                      <div className="flex flex-col">
@@ -131,7 +131,7 @@ export function LoggingForm({ initialConfig, channels, guildId }: LoggingFormPro
                         />
                      </div>
 
-                     <div className="flex items-center gap-4 border-l border-site-ink/[5] pl-4 md:pl-8">
+                     <div className="flex items-center gap-4 border-l border-site-ink/[0.05] pl-4 md:pl-8">
                         <div className="flex-col items-end hidden sm:flex">
                            <span className={cn(
                              "text-[10px] font-black uppercase tracking-widest",

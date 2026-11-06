@@ -117,7 +117,7 @@ export function AutoRoleForm({ initialConfig, roles, guildId }: AutoRoleFormProp
           </SelectContent>
         </Select>
 
-        <div className="grid grid-cols-1 gap-2 min-h-[100px] p-4 bg-site-card/40 rounded-2xl border border-site-ink/[5] relative overflow-hidden">
+        <div className="grid grid-cols-1 gap-2 min-h-[100px] p-4 bg-site-card/40 rounded-2xl border border-site-ink/[0.05] relative overflow-hidden">
           {config[type].length === 0 ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center opacity-20">
               <ShieldCheck className="h-8 w-8 mb-2" />
@@ -131,7 +131,7 @@ export function AutoRoleForm({ initialConfig, roles, guildId }: AutoRoleFormProp
                 return (
                   <div 
                     key={roleId} 
-                    className="flex items-center gap-2 bg-site-ink/[8] border border-site-ink/[7.5] px-3 py-1.5 rounded-lg text-sm group animate-in zoom-in-95 duration-200"
+                    className="flex items-center gap-2 bg-site-ink/[0.08] border border-site-ink/[0.075] px-3 py-1.5 rounded-lg text-sm group animate-in zoom-in-95 duration-200"
                   >
                     <div 
                       className="w-2 h-2 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" 

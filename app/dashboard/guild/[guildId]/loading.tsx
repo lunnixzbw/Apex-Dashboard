@@ -15,26 +15,22 @@
  */
 
 import React from "react";
+import { Skel } from "@/components/dashboard/zv-loader";
 
 export default function GuildLoading() {
   return (
-    <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-2">
-          <div className="h-8 w-64 bg-site-ink/10 rounded-lg animate-pulse" />
-          <div className="h-4 w-96 bg-site-ink/[5] rounded-lg animate-pulse" />
-        </div>
+    <div className="space-y-8 animate-in fade-in duration-300" role="status" aria-label="Loading">
+      <div className="space-y-3">
+        <Skel className="h-8 w-64" />
+        <Skel className="h-4 w-96 max-w-full" />
       </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-        <div className="lg:col-span-3 space-y-4">
-           {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="h-32 w-full bg-site-card border border-site-ink/10 rounded-[40px] animate-pulse" />
-           ))}
+      <div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
+        <div className="space-y-4 lg:col-span-3">
+          {[1, 2, 3, 4].map((i) => <Skel key={i} className="h-32 w-full rounded-[32px]" />)}
         </div>
         <div className="space-y-6">
-           <div className="h-64 w-full bg-site-card border border-site-ink/10 rounded-[40px] animate-pulse" />
-           <div className="h-48 w-full bg-site-card border border-site-ink/10 rounded-[40px] animate-pulse" />
+          <Skel className="h-64 w-full rounded-[32px]" />
+          <Skel className="h-48 w-full rounded-[32px]" />
         </div>
       </div>
     </div>

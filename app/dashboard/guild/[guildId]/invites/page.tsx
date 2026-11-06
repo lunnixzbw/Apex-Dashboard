@@ -102,7 +102,7 @@ export default function InvitesPage({ params }: { params: { guildId: string } })
                 </div>
               ) : (
                 data.map((row, index) => (
-                  <div key={index} className="flex items-center justify-between p-4 bg-site-card/40 rounded-xl border border-site-ink/10 hover:bg-site-ink/[5] transition-colors">
+                  <div key={index} className="flex items-center justify-between p-4 bg-site-card/40 rounded-xl border border-site-ink/10 hover:bg-site-ink/[0.05] transition-colors">
                     <div className="flex items-center gap-4">
                       <div className="w-10 h-10 rounded-full bg-site-ink/10 flex items-center justify-center text-sm font-black border border-site-ink/15">
                         {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : <span className="text-site-faint">#{index + 1}</span>}

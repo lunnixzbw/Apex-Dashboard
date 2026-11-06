@@ -24,7 +24,7 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 
 const LoggingForm = dynamic(() => import("@/components/dashboard/logging-form").then(mod => mod.LoggingForm), {
-  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[2] rounded-[40px]" />
+  loading: () => <div className="h-96 w-full animate-pulse bg-site-ink/[0.02] rounded-[40px]" />
 });
 
 export default async function LoggingPage({ params }: { params: { guildId: string } }) {

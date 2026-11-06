@@ -99,7 +99,7 @@ export function SettingsForm({ initialPrefix, guildId }: SettingsFormProps) {
             </form>
           </div>
           
-          <div className="bg-site-ink/[3] px-8 py-4 border-t border-site-ink/10 flex items-center justify-between">
+          <div className="bg-site-ink/[0.03] px-8 py-4 border-t border-site-ink/10 flex items-center justify-between">
              <span className="text-xs text-site-faint font-medium">Last synced: Just now</span>
              <button className="text-xs text-primary hover:underline font-bold">Refresh Cache</button>
           </div>

@@ -106,7 +106,11 @@ export async function middleware(req: NextRequest) {
   if (!token?.sub) {
     // No session cookie at all: go sign in. A cookie we simply couldn't decode is let through:
     // the bot API still checks who you are on every request, so nothing is exposed.
-    if (!hasCookie) return NextResponse.redirect(new URL("/", req.nextUrl.origin));
+    if (!hasCookie) {
+      const to = new URL("/login", req.nextUrl.origin);
+      to.searchParams.set("callbackUrl", p + url.search);
+      return NextResponse.redirect(to);
+    }
     return NextResponse.next();
   }
 

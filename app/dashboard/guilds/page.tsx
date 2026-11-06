@@ -34,8 +34,8 @@ export const revalidate = 0;
 export default async function GuildsPage() {
   const session = await getServerSession(authOptions);
   
-  if (!session) redirect("/");
-  if (!session.accessToken) redirect("/?error=SessionExpired");
+  if (!session) redirect("/login?callbackUrl=/dashboard/guilds");
+  if (!session.accessToken) redirect("/login?error=SessionExpired");
 
   let botGuilds: GuildSummary[] = [];
   let userGuilds: any[] = [];
@@ -132,7 +132,7 @@ export default async function GuildsPage() {
           </div>
         </div>
       ) : guilds.length === 0 ? (
-        <div className="bg-site-ink/[3] border border-site-ink/10 border-dashed p-16 rounded-3xl text-center">
+        <div className="bg-site-ink/[0.03] border border-site-ink/10 border-dashed p-16 rounded-3xl text-center">
           <div className="h-16 w-16 bg-site-ink/10 rounded-full flex items-center justify-center mx-auto mb-6">
             <Users className="h-8 w-8 text-site-faint" />
           </div>
@@ -197,11 +197,11 @@ export default async function GuildsPage() {
                     {guild.name}
                   </h3>
                   <div className="flex items-center gap-4 mt-4 text-site-muted">
-                    <div className="flex items-center gap-1.5 bg-site-ink/[5] px-3 py-1.5 rounded-xl border border-site-ink/5">
+                    <div className="flex items-center gap-1.5 bg-site-ink/[0.05] px-3 py-1.5 rounded-xl border border-site-ink/5">
                       <Users className="h-4 w-4 text-site-faint" />
                       <span className="text-sm font-semibold text-site-body">{guild.member_count.toLocaleString()}</span>
                     </div>
-                    <div className="flex items-center gap-1.5 bg-site-ink/[5] px-3 py-1.5 rounded-xl border border-site-ink/5">
+                    <div className="flex items-center gap-1.5 bg-site-ink/[0.05] px-3 py-1.5 rounded-xl border border-site-ink/5">
                       <Hash className="h-4 w-4 text-site-faint" />
                       <span className="text-sm font-semibold text-site-body">Active</span>
                     </div>
@@ -209,7 +209,7 @@ export default async function GuildsPage() {
                 </div>
               </div>
 
-              <div className="px-6 py-4 bg-site-ink/[2] border-t border-site-ink/[8] group-hover:bg-primary/5 transition-colors">
+              <div className="px-6 py-4 bg-site-ink/[0.02] border-t border-site-ink/[0.08] group-hover:bg-primary/5 transition-colors">
                 <Button className="w-full justify-between group/btn py-6" variant="secondary" asChild>
                   <Link href={`/dashboard/guild/${guild.id}`}>
                     <span>Manage Server</span>

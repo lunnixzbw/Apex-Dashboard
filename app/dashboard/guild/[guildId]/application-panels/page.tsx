@@ -111,11 +111,11 @@ export default function ApplicationPanelsPage({ params }: { params: { guildId: s
       <div className={card}>
         <p className="mb-3 text-xs font-bold uppercase text-site-faint">Preview</p>
         <div className="rounded-lg border-l-4 bg-[#2b2d31] p-4" style={{ borderColor: toHex(edit.color) }}>
-          <p className="font-bold text-site-ink">{edit.title}</p>
-          <p className="mt-1 whitespace-pre-wrap text-sm text-site-body">{edit.description}</p>
+          <p className="font-bold text-white">{edit.title}</p>
+          <p className="mt-1 whitespace-pre-wrap text-sm text-zinc-300">{edit.description}</p>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
-          {edit.form_ids.map((id: number) => <span key={id} className="rounded-md bg-[#5865f2] px-4 py-1.5 text-sm font-semibold text-site-ink">{forms.find((f) => f.id === id)?.name || id}</span>)}
+          {edit.form_ids.map((id: number) => <span key={id} className="rounded-md bg-[#5865f2] px-4 py-1.5 text-sm font-semibold text-white">{forms.find((f) => f.id === id)?.name || id}</span>)}
         </div>
       </div>
     </div>

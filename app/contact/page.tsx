@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LifeBuoy, Mail } from "lucide-react";
+import { Inbox, LifeBuoy, Mail } from "lucide-react";
 import { SiteShell, PageHeader } from "@/components/site/shell";
 import { TicketForm } from "@/components/site/ticket-form";
 import { BRAND, CONTACT_EMAIL } from "@/lib/site";
@@ -21,6 +21,11 @@ export default function ContactPage() {
             <LifeBuoy className="h-5 w-5 text-site-ink" />
             <h3 className="mt-3 font-semibold text-site-ink">Support server</h3>
             <p className="mt-1 text-sm text-site-muted">The fastest way to get help. Join and open a ticket.</p>
+          </a>
+          <a href="/tickets" className="block rounded-2xl border border-site-ink/10 bg-site-card/70 p-6 transition hover:border-site-ink/30">
+            <Inbox className="h-5 w-5 text-site-ink" />
+            <h3 className="mt-3 font-semibold text-site-ink">My tickets</h3>
+            <p className="mt-1 text-sm text-site-muted">Read replies and continue a conversation. Sign in with Discord.</p>
           </a>
           {CONTACT_EMAIL && (
             <a href={`mailto:${CONTACT_EMAIL}`} className="block rounded-2xl border border-site-ink/10 bg-site-card/70 p-6 transition hover:border-site-ink/30">
