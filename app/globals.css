@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: rgb(var(--site-bg));
+  --foreground: rgb(var(--site-ink));
+  --primary: rgb(var(--site-ink));
+  --primary-glow: rgb(var(--site-ink) / 0.15);
+  --glass-bg: rgb(var(--site-card) / 0.6);
+  --glass-border: rgb(var(--site-ink) / 0.06);
+  --glass-red-border: rgb(var(--site-ink) / 0.2);
+}
+
+/* Public website theme. Light is the base; html.dark (set before first paint from the device setting or the user's choice) flips it. */
+:root {
+  --site-bg: 255 255 255;
+  --site-card: 245 245 246;
+  --site-ink: 9 9 11;
+  --site-body: 63 63 70;
+  --site-muted: 82 82 91;
+  --site-faint: 113 113 122;
+}
+html.dark {
+  --site-bg: 0 0 0;
+  --site-card: 10 10 11;
+  --site-ink: 255 255 255;
+  --site-body: 212 212 216;
+  --site-muted: 161 161 170;
+  --site-faint: 113 113 122;
+}
+/* The dragon logo is white artwork: turn it black on the light theme. */
+html:not(.dark) .site-logo { filter: invert(1); }
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-inter), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: rgb(var(--site-bg)); }
+::-webkit-scrollbar-thumb { background: rgb(var(--site-ink) / 0.2); border-radius: 10px; border: 2px solid rgb(var(--site-bg)); }
+::-webkit-scrollbar-thumb:hover { background: rgb(var(--site-ink) / 0.4); }
+* { scrollbar-width: thin; scrollbar-color: rgb(var(--site-ink) / 0.25) rgb(var(--site-bg)); }
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .glass {
+    @apply backdrop-blur-xl bg-site-ink/[0.02] border border-site-ink/[0.06];
+  }
+  .glass-red {
+    @apply backdrop-blur-xl bg-site-ink/[0.03] border border-site-ink/[0.12];
+  }
+  .liquid-glass {
+    background: linear-gradient(135deg, rgb(var(--site-ink) / 0.06) 0%, rgb(var(--site-ink) / 0) 100%);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgb(var(--site-ink) / 0.1);
+    box-shadow: 0 8px 32px 0 rgb(0 0 0 / 0.2);
+  }
+}
+
+
+/* Native dropdowns follow the theme */
+:root { color-scheme: light; }
+html.dark { color-scheme: dark; }
+select { background-color: rgb(var(--site-card)); color: rgb(var(--site-ink)); }
+select option, select optgroup { background-color: rgb(var(--site-card)); color: rgb(var(--site-ink)); }
