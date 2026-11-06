@@ -24,8 +24,12 @@ function Premium({ on }: { on: boolean }) {
   return <span className="ml-2 inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-bold uppercase text-amber-400"><Crown className="h-3 w-3" />Premium</span>;
 }
 
+type Q = { text: string; type: "text" | "choice"; options: string[]; multi: boolean };
+const blankQ = (): Q => ({ text: "", type: "text", options: [], multi: false });
+const toQ = (q: any): Q => (typeof q === "string" ? { ...blankQ(), text: q } : { ...blankQ(), ...q, options: Array.isArray(q?.options) ? q.options : [] });
+
 const blank = () => ({
-  id: 0, name: "", description: "", enabled: true, questions: [""] as string[],
+  id: 0, name: "", description: "", enabled: true, questions: [blankQ()] as any[],
   settings: {
     submission_channel: null as string | null, confirm_message: null as string | null, complete_message: null as string | null,
     restricted: { enabled: false, mode: "any", roles: [] as string[] }, required: { enabled: false, mode: "any", roles: [] as string[] },
@@ -64,7 +68,7 @@ export default function ApplicationsPage({ params }: { params: { guildId: string
     if (!edit.name.trim()) return toast.error("Give the application a name.");
     setSaving(true);
     try {
-      const body = { name: edit.name, description: edit.description, enabled: edit.enabled, questions: edit.questions.filter((q: string) => q.trim()), settings: edit.settings };
+      const body = { name: edit.name, description: edit.description, enabled: edit.enabled, questions: edit.questions.filter((q: Q) => q.text.trim()).map((q: Q) => q.type === "choice" ? { text: q.text.trim(), type: "choice", options: q.options.map((o) => o.trim()).filter(Boolean), multi: q.multi } : q.text.trim()), settings: edit.settings };
       if (edit.id) await api.updateApplication(gid, edit.id, body); else await api.createApplication(gid, body);
       toast.success("Application saved");
       setEdit(null); await load();
@@ -101,7 +105,7 @@ export default function ApplicationsPage({ params }: { params: { guildId: string
               </div>
               {f.description && <p className="mt-2 text-sm text-site-muted">{f.description}</p>}
               <div className="mt-4 flex gap-2">
-                <button onClick={() => setEdit(JSON.parse(JSON.stringify({ ...f, questions: f.questions.length ? f.questions : [""] })))} className="rounded-xl bg-site-ink/10 px-4 py-2 text-sm font-bold text-site-ink hover:bg-site-ink/15">Edit</button>
+                <button onClick={() => setEdit(JSON.parse(JSON.stringify({ ...f, questions: f.questions.length ? f.questions.map(toQ) : [blankQ()] })))} className="rounded-xl bg-site-ink/10 px-4 py-2 text-sm font-bold text-site-ink hover:bg-site-ink/15">Edit</button>
                 <button onClick={() => del(f)} className="rounded-xl bg-site-ink/10 px-3 py-2 text-site-ink hover:bg-site-ink/20"><Trash2 className="h-4 w-4" /></button>
               </div>
             </div>
@@ -162,16 +166,41 @@ export default function ApplicationsPage({ params }: { params: { guildId: string
       </div>
 
       <div className={card + " space-y-3"}>
-        <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-site-ink">Questions</h2><span className="text-xs text-site-faint">{edit.questions.filter((q: string) => q.trim()).length}/{qMax}{!premium && " · Premium allows 100"}</span></div>
-        {edit.questions.map((q: string, i: number) => (
-          <div key={i} className="flex items-center gap-2">
-            <GripVertical className="h-4 w-4 shrink-0 text-site-faint" />
-            <span className="w-6 shrink-0 text-xs font-bold text-site-faint">{i + 1}.</span>
-            <input className={field} maxLength={300} value={q} placeholder="Type a question…" onChange={(e) => set({ questions: edit.questions.map((x: string, j: number) => (j === i ? e.target.value : x)) })} />
-            <button onClick={() => set({ questions: edit.questions.filter((_: any, j: number) => j !== i) })} className="rounded-lg p-2 text-site-faint hover:text-site-ink"><Trash2 className="h-4 w-4" /></button>
-          </div>
-        ))}
-        <button onClick={() => set({ questions: [...edit.questions, ""] })} disabled={edit.questions.length >= qMax} className="flex items-center gap-2 rounded-xl bg-site-ink/10 px-4 py-2 text-sm font-bold text-site-ink disabled:opacity-40"><Plus className="h-4 w-4" />Add question</button>
+        <div className="flex items-center justify-between"><h2 className="text-lg font-bold text-site-ink">Questions</h2><span className="text-xs text-site-faint">{edit.questions.filter((q: Q) => q.text.trim()).length}/{qMax}{!premium && " · Premium allows 100"}</span></div>
+        {edit.questions.map((q: Q, i: number) => {
+          const patch = (p: Partial<Q>) => set({ questions: edit.questions.map((x: Q, j: number) => (j === i ? { ...x, ...p } : x)) });
+          return (
+            <div key={i} className="space-y-2 rounded-2xl border border-site-ink/10 p-3">
+              <div className="flex items-center gap-2">
+                <GripVertical className="h-4 w-4 shrink-0 text-site-faint" />
+                <span className="w-6 shrink-0 text-xs font-bold text-site-faint">{i + 1}.</span>
+                <input className={field} maxLength={300} value={q.text} placeholder="Type a question…" onChange={(e) => patch({ text: e.target.value })} />
+                <select className={field + " !w-auto shrink-0"} value={q.type} onChange={(e) => patch({ type: e.target.value as Q["type"], options: e.target.value === "choice" && q.options.length < 2 ? ["", ""] : q.options })}>
+                  <option value="text">Written answer</option>
+                  <option value="choice">Multiple choice</option>
+                </select>
+                <button onClick={() => set({ questions: edit.questions.filter((_: any, j: number) => j !== i) })} className="rounded-lg p-2 text-site-faint hover:text-site-ink" aria-label="Remove question"><Trash2 className="h-4 w-4" /></button>
+              </div>
+              {q.type === "choice" && (
+                <div className="space-y-2 pl-10">
+                  {q.options.map((o: string, k: number) => (
+                    <div key={k} className="flex items-center gap-2">
+                      <span className="w-5 shrink-0 text-xs text-site-faint">{String.fromCharCode(65 + (k % 26))}</span>
+                      <input className={field} maxLength={100} value={o} placeholder={`Option ${k + 1}`} onChange={(e) => patch({ options: q.options.map((x, m) => (m === k ? e.target.value : x)) })} />
+                      <button onClick={() => patch({ options: q.options.filter((_, m) => m !== k) })} disabled={q.options.length <= 2} className="rounded-lg p-2 text-site-faint hover:text-site-ink disabled:opacity-30" aria-label="Remove option"><Trash2 className="h-3.5 w-3.5" /></button>
+                    </div>
+                  ))}
+                  <div className="flex flex-wrap items-center gap-4">
+                    <button onClick={() => patch({ options: [...q.options, ""] })} disabled={q.options.length >= 25} className="flex items-center gap-1.5 rounded-lg bg-site-ink/10 px-3 py-1.5 text-xs font-bold text-site-ink disabled:opacity-40"><Plus className="h-3.5 w-3.5" />Add option</button>
+                    <label className="flex items-center gap-2 text-xs text-site-muted"><input type="checkbox" checked={q.multi} onChange={(e) => patch({ multi: e.target.checked })} /> Allow picking more than one</label>
+                    <span className="text-xs text-site-faint">{q.options.length}/25 options</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+        <button onClick={() => set({ questions: [...edit.questions, blankQ()] })} disabled={edit.questions.length >= qMax} className="flex items-center gap-2 rounded-xl bg-site-ink/10 px-4 py-2 text-sm font-bold text-site-ink disabled:opacity-40"><Plus className="h-4 w-4" />Add question</button>
       </div>
 
       <div className={card + " space-y-5"}>
