@@ -25,7 +25,7 @@ import {
   LifeBuoy, ChevronDown, Bot, Shield
 } from "lucide-react";
 import {
-  BadgeCheck, BarChart3, BarChartHorizontal, BellRing, Cake, ClipboardList, Crown, Eye, Flame, FlaskConical, Gift, Inbox, LayoutGrid, Lightbulb, Link2, Lock, Mail, MessageSquareQuote, Mic, Palette, PartyPopper, Rocket, ScrollText, Share2, ShieldAlert, Smile, SmilePlus, Swords, Tag, Trash2, TrendingUp, UserPlus, Volume2, Wallet
+  PenLine, UsersRound, BadgeCheck, BarChart3, BarChartHorizontal, BellRing, Cake, ClipboardList, Crown, Eye, Flame, FlaskConical, Gift, Inbox, LayoutGrid, Lightbulb, Link2, Lock, Mail, MessageSquareQuote, Mic, Palette, PartyPopper, Rocket, ScrollText, Share2, ShieldAlert, Smile, SmilePlus, Swords, Tag, Trash2, TrendingUp, UserPlus, Volume2, Wallet
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { cn, isAdmin } from "@/lib/utils";
@@ -136,6 +136,7 @@ export default function DashboardLayout({
             { name: "Auto React", href: `/dashboard/guild/${currentGuildId}/autoreact`, icon: SmilePlus },
             { name: "Reaction Roles", href: `/dashboard/guild/${currentGuildId}/reactionroles`, icon: Smile },
             { name: "Join DM", href: `/dashboard/guild/${currentGuildId}/joindm`, icon: Mail },
+            { name: "Embed Creator", href: `/dashboard/guild/${currentGuildId}/embed`, icon: PenLine },
             { name: "Invites", href: `/dashboard/guild/${currentGuildId}/invites`, icon: Share2 },
             { name: "Tracking", href: `/dashboard/guild/${currentGuildId}/tracking`, icon: Eye },
           ],
@@ -180,7 +181,7 @@ export default function DashboardLayout({
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Servers", href: "/dashboard/guilds", icon: Server },
         ...(isAdmin(session?.user?.id) 
-            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }] 
+            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }] 
             : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];

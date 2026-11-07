@@ -275,6 +275,16 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  getEmbedVariables: (guildId: string) => request<{ key: string; description: string }[]>(`/guilds/${guildId}/embed/variables`),
+  sendEmbed: (guildId: string, data: any) =>
+    request<{ status: string; jump_url: string }>(`/guilds/${guildId}/embed/send`, { method: "POST", body: JSON.stringify(data) }),
+
+  // Team Center (bot owners only)
+  getTeam: () => request<{ members: any[]; catalog: { key: string; label: string; description: string }[] }>("/admin/team"),
+  lookupTeamUser: (id: string) => request<any>(`/admin/team/lookup/${id}`),
+  setTeamPermissions: (id: string, permissions: string[]) =>
+    request<{ status: string; permissions: string[] }>(`/admin/team/${id}/permissions`, { method: "PUT", body: JSON.stringify({ permissions }) }),
+
   getJoinDM: (guildId: string) => request<any>(`/guilds/${guildId}/joindm`),
   updateJoinDM: (guildId: string, data: any) =>
     request<{ status: string }>(`/guilds/${guildId}/joindm`, {
