@@ -97,10 +97,7 @@ export function TeamCenter() {
         <div className="space-y-2">
           <label className="pl-1 text-xs font-black uppercase tracking-widest text-site-faint">Person</label>
           <Select value={selected} onValueChange={(v: string) => choose(v)} options={options} placeholder="Choose a person" />
-          <div className="flex gap-2 pt-1">
-            <Input value={lookupId} onChange={(e) => setLookupId(e.target.value)} placeholder="Not listed? Paste a Discord user ID" onKeyDown={(e) => e.key === "Enter" && addById()} />
-            <Button variant="outline" onClick={addById} disabled={looking} className="gap-2">{looking ? <RefreshCcw className="h-4 w-4 animate-spin" /> : <Search className="h-4 w-4" />} Find</Button>
-          </div>
+          <p className="pl-1 text-xs text-site-faint">Only team members are listed. Add someone to the team with <code>team core add @user</code> or <code>team dev add @user</code>.</p>
         </div>
 
         {person && (
