@@ -229,6 +229,12 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  getAntiRaid: (guildId: string) => request<any>(`/guilds/${guildId}/antiraid`),
+  updateAntiRaid: (guildId: string, data: any) =>
+    request<{ status: string }>(`/guilds/${guildId}/antiraid`, {
+      method: "PATCH",
+      body: JSON.stringify(data),
+    }),
   getAntiNuke: (guildId: string) => request<any>(`/guilds/${guildId}/antinuke`),
   updateAntiNuke: (guildId: string, data: any) => 
     request<{ status: string }>(`/guilds/${guildId}/antinuke`, {

@@ -73,6 +73,7 @@ export function GuildTabs({ guildId }: { guildId: string }) {
   const tabs: Tab[] = [
     { name: "Overview", href: `/dashboard/guild/${guildId}`, icon: LayoutDashboard },
     { name: "Anti-Nuke", href: `/dashboard/guild/${guildId}/antinuke`, icon: Swords },
+    { name: "Anti-Raid", href: `/dashboard/guild/${guildId}/antiraid`, icon: ShieldAlert },
     { name: "Automod", href: `/dashboard/guild/${guildId}/automod`, icon: ShieldCheck },
     { name: "Tickets", href: `/dashboard/guild/${guildId}/tickets`, icon: Ticket },
     { name: "Applications", href: `/dashboard/guild/${guildId}/applications`, icon: ClipboardList },

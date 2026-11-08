@@ -43,8 +43,8 @@ export function VanityRoleForm({ initialSetups, channels, roles, guildId }: Vani
   const [newChannel, setNewChannel] = useState<string | null>(null);
 
   const handleCreate = async () => {
-    if (!newVanity || !newRole || !newChannel) {
-      toast.error("Please fill in all fields (vanity, role, channel).");
+    if (!newVanity || !newRole) {
+      toast.error("Please fill in the vanity code and the role (log channel is optional).");
       return;
     }
 
@@ -53,15 +53,15 @@ export function VanityRoleForm({ initialSetups, channels, roles, guildId }: Vani
       await api.addVanityRole(guildId, {
         vanity: newVanity,
         role_id: newRole,
-        log_channel_id: newChannel
+        log_channel_id: newChannel || ""
       });
       setSetups([...setups, { vanity: newVanity, role_id: newRole, log_channel_id: newChannel }]);
       setNewVanity("");
       setNewRole(null);
       setNewChannel(null);
       toast.success("Vanity role setup added!");
-    } catch (err) {
-      toast.error("Failed to add vanity role setup.");
+    } catch (err: any) {
+      toast.error(err?.message && err.message !== "An unknown error occurred" ? err.message : "Failed to save vanity setup.");
     } finally {
       setSaving(false);
     }

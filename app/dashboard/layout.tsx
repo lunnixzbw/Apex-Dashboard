@@ -18,7 +18,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Server, ShieldCheck, Ticket, BarChart4, FileText, Settings,
   Menu, X, Bell, User, Search, ChevronRight, Star, Sparkles, LogOut,
@@ -39,6 +39,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const pathname = usePathname();
   const { data: session, status } = useSession();
@@ -117,6 +119,7 @@ export default function DashboardLayout({
           name: "Security",
           items: [
             { name: "Anti-Nuke", href: `/dashboard/guild/${currentGuildId}/antinuke`, icon: Swords },
+            { name: "Anti-Raid", href: `/dashboard/guild/${currentGuildId}/antiraid`, icon: ShieldAlert },
             { name: "Automod", href: `/dashboard/guild/${currentGuildId}/automod`, icon: ShieldCheck },
             { name: "Verification", href: `/dashboard/guild/${currentGuildId}/verification`, icon: BadgeCheck },
             { name: "Anti-Betray", href: `/dashboard/guild/${currentGuildId}/antibetray`, icon: ShieldAlert },
@@ -185,6 +188,16 @@ export default function DashboardLayout({
             : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];
+
+  // Page search: flatten every sidebar link and filter by what was typed.
+  const searchPages: { name: string; href: string }[] = [];
+  for (const it of allSidebarItems as any[]) {
+    if (it?.href) searchPages.push({ name: it.name, href: it.href });
+    for (const sub of it?.items || []) if (sub?.href) searchPages.push({ name: sub.name, href: sub.href });
+  }
+  const searchTerm = searchQuery.trim().toLowerCase();
+  const searchResults = searchTerm ? searchPages.filter((p) => p.name.toLowerCase().includes(searchTerm)).slice(0, 8) : [];
+  const goTo = (href: string) => { setSearchQuery(""); router.push(href); };
 
   // Separate the "Back to Servers" item when inside a guild
   let mainSidebarItems = allSidebarItems;
@@ -387,9 +400,25 @@ export default function DashboardLayout({
             <Search className="absolute left-4 h-4 w-4 text-site-faint group-focus-within:text-site-ink transition-colors" />
             <input
               type="text"
-              placeholder="Search..."
+              placeholder="Search pages..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter" && searchResults[0]) goTo(searchResults[0].href); if (e.key === "Escape") setSearchQuery(""); }}
               className="w-full bg-site-ink/[0.03] border border-site-ink/5 rounded-2xl py-2.5 pl-12 pr-4 text-xs font-bold text-site-body focus:outline-none focus:ring-1 focus:ring-site-ink/30 focus:bg-site-ink/[0.05] transition-all placeholder:text-site-faint"
             />
+            {searchTerm && (
+              <div className="absolute top-full left-0 right-0 mt-2 z-50 rounded-2xl border border-site-ink/10 bg-site-card shadow-xl shadow-black/30 overflow-hidden">
+                {searchResults.length === 0 ? (
+                  <p className="px-4 py-3 text-xs text-site-faint">No pages match &quot;{searchQuery}&quot;</p>
+                ) : (
+                  searchResults.map((r) => (
+                    <button key={r.href} type="button" onMouseDown={() => goTo(r.href)} className="w-full text-left px-4 py-2.5 text-xs font-bold text-site-body hover:bg-site-ink/5">
+                      {r.name}
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
           </div>
 
           <div className="flex items-center gap-6">
