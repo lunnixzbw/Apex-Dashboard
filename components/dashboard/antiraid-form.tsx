@@ -6,18 +6,25 @@ import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { MultiPick } from "@/components/dashboard/multi-pick";
 
 interface Props {
   initialConfig: any;
   guildId: string;
+  roles: any[];
+  channels: any[];
 }
 
 const label = "text-xs font-black uppercase text-site-faint tracking-widest";
 
-export function AntiRaidForm({ initialConfig, guildId }: Props) {
+export function AntiRaidForm({ initialConfig, guildId, roles, channels }: Props) {
   const [c, setC] = useState<any>(initialConfig);
   const [saving, setSaving] = useState(false);
   const [raidBusy, setRaidBusy] = useState(false);
+
+  const textChannels = channels.filter((ch: any) => ch.type === "0" || ch.type === 0 || ch.type === "text" || ch.type === "5" || ch.type === 5 || !ch.type);
+  const pickRoles = roles.filter((r: any) => r.name !== "@everyone").map((r: any) => ({ id: String(r.id), name: r.name, color: r.color }));
 
   const num = (v: string) => (v === "" ? 0 : parseInt(v, 10) || 0);
 
@@ -112,17 +119,24 @@ export function AntiRaidForm({ initialConfig, guildId }: Props) {
         </div>
 
         <div className="space-y-2">
-          <label className={label}>Log channel ID</label>
-          <Input value={c.log_channel_id || ""} disabled={!c.enabled}
-            onChange={(e) => setC({ ...c, log_channel_id: e.target.value ? e.target.value.replace(/\D/g, "") : null })}
-            placeholder="Discord channel ID" className="py-6 font-mono" />
+          <label className={label}>Log channel</label>
+          <Select value={c.log_channel_id || "none"} disabled={!c.enabled} onValueChange={(v) => setC({ ...c, log_channel_id: v === "none" ? null : v })}>
+            <SelectTrigger className="w-full h-12 bg-site-card border-site-ink/10 text-left">
+              <SelectValue placeholder="Select a log channel..." />
+            </SelectTrigger>
+            <SelectContent className="bg-site-card border-site-ink/10">
+              <SelectItem value="none" className="focus:bg-site-ink/10">No logs</SelectItem>
+              {textChannels.map((ch: any) => (
+                <SelectItem key={ch.id} value={String(ch.id)} className="focus:bg-site-ink/10"># {ch.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="space-y-2">
-          <label className={label}>Exempt role IDs (comma separated)</label>
-          <Input value={(c.whitelist_role_ids || []).join(", ")} disabled={!c.enabled}
-            onChange={(e) => setC({ ...c, whitelist_role_ids: e.target.value.split(",").map((x: string) => x.replace(/\D/g, "")).filter(Boolean) })}
-            placeholder="Members with these roles are never removed" className="py-6 font-mono" />
+          <label className={label}>Exempt roles</label>
+          <MultiPick items={pickRoles} value={c.whitelist_role_ids || []} onChange={(v) => setC({ ...c, whitelist_role_ids: v })}
+            placeholder="Members with these roles are never removed" disabled={!c.enabled} prefix="@" />
         </div>
       </div>
 

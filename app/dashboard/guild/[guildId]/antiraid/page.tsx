@@ -4,7 +4,11 @@ import { api } from "@/lib/api";
 import { AntiRaidForm } from "@/components/dashboard/antiraid-form";
 
 export default async function AntiRaidPage({ params }: { params: { guildId: string } }) {
-  const config = await api.getAntiRaid(params.guildId);
+  const [config, roles, channels] = await Promise.all([
+    api.getAntiRaid(params.guildId),
+    api.getRoles(params.guildId).catch(() => []),
+    api.getChannels(params.guildId).catch(() => []),
+  ]);
   if (!config) return null;
 
   return (
@@ -16,7 +20,7 @@ export default async function AntiRaidPage({ params }: { params: { guildId: stri
         </h2>
         <p className="text-site-muted mt-1">Detect join raids in seconds, lock the server down and remove the raiders automatically.</p>
       </div>
-      <AntiRaidForm initialConfig={config} guildId={params.guildId} />
+      <AntiRaidForm initialConfig={config} guildId={params.guildId} roles={roles} channels={channels} />
     </div>
   );
 }
