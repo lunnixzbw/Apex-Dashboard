@@ -55,7 +55,7 @@ export function VanityRoleForm({ initialSetups, channels, roles, guildId }: Vani
         role_id: newRole,
         log_channel_id: newChannel || ""
       });
-      setSetups([...setups, { vanity: newVanity, role_id: newRole, log_channel_id: newChannel }]);
+      setSetups([...setups, { vanity: newVanity, role_id: newRole, log_channel_id: newChannel || "" }]);
       setNewVanity("");
       setNewRole(null);
       setNewChannel(null);
