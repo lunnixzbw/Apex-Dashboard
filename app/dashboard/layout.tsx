@@ -22,7 +22,7 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard, Server, ShieldCheck, Ticket, BarChart4, FileText, Settings,
   Menu, X, Bell, User, Search, ChevronRight, Star, Sparkles, LogOut,
-  LifeBuoy, ChevronDown, Bot, Shield
+  LifeBuoy, ChevronDown, Bot, Shield, Youtube, Copy
 } from "lucide-react";
 import {
   PenLine, UsersRound, BadgeCheck, BarChart3, BarChartHorizontal, BellRing, Cake, ClipboardList, Crown, Eye, Flame, FlaskConical, Gift, Inbox, LayoutGrid, Lightbulb, Link2, Lock, Mail, MessageSquareQuote, Mic, Palette, PartyPopper, Rocket, ScrollText, Share2, ShieldAlert, Smile, SmilePlus, Swords, Tag, Trash2, TrendingUp, UserPlus, Volume2, Wallet
@@ -133,6 +133,7 @@ export default function DashboardLayout({
             { name: "Welcome", href: `/dashboard/guild/${currentGuildId}/welcome`, icon: PartyPopper },
             { name: "Tag Supporter", href: `/dashboard/guild/${currentGuildId}/tagsupporter`, icon: Crown },
             { name: "Autoresponder", href: `/dashboard/guild/${currentGuildId}/autoresponder`, icon: MessageSquareQuote },
+            { name: "YouTube", href: `/dashboard/guild/${currentGuildId}/youtube`, icon: Youtube },
             { name: "Leveling", href: `/dashboard/guild/${currentGuildId}/leveling`, icon: TrendingUp },
             { name: "Vanity Roles", href: `/dashboard/guild/${currentGuildId}/vanityroles`, icon: Link2 },
             { name: "Auto Role", href: `/dashboard/guild/${currentGuildId}/autorole`, icon: UserPlus },
@@ -184,7 +185,7 @@ export default function DashboardLayout({
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Servers", href: "/dashboard/guilds", icon: Server },
         ...(isAdmin(session?.user?.id) 
-            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }] 
+            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }] 
             : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];

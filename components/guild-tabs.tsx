@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { 
-  ShieldCheck, 
+  ShieldCheck, Youtube,
   Ticket, 
   BarChart4, 
   FileText, 
@@ -88,6 +88,7 @@ export function GuildTabs({ guildId }: { guildId: string }) {
     { name: "Role Reminders", href: `/dashboard/guild/${guildId}/role-reminders`, icon: BellRing },
     { name: "Giveaways", href: `/dashboard/guild/${guildId}/giveaways`, icon: Gift },
     { name: "Polls", href: `/dashboard/guild/${guildId}/polls`, icon: BarChart3 },
+    { name: "YouTube", href: `/dashboard/guild/${guildId}/youtube`, icon: Youtube },
     { name: "Mod Log", href: `/dashboard/guild/${guildId}/modlog`, icon: ScrollText },
     { name: "Auto Delete", href: `/dashboard/guild/${guildId}/autodelete`, icon: Trash2 },
     { name: "Stats Channels", href: `/dashboard/guild/${guildId}/serverstats`, icon: BarChartHorizontal },

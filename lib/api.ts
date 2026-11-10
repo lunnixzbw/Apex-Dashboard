@@ -240,6 +240,14 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  getYoutube: (guildId: string) => request<any>(`/guilds/${guildId}/youtube`),
+  addYoutube: (guildId: string, data: any) =>
+    request<any>(`/guilds/${guildId}/youtube`, { method: "POST", body: JSON.stringify(data) }),
+  updateYoutube: (guildId: string, id: number, data: any) =>
+    request<any>(`/guilds/${guildId}/youtube/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
+  deleteYoutube: (guildId: string, id: number) =>
+    request<{ status: string }>(`/guilds/${guildId}/youtube/${id}`, { method: "DELETE" }),
+
   getAntiRaid: (guildId: string) => request<any>(`/guilds/${guildId}/antiraid`),
   updateAntiRaid: (guildId: string, data: any) =>
     request<{ status: string }>(`/guilds/${guildId}/antiraid`, {
@@ -295,6 +303,10 @@ export const api = {
   getEmbedVariables: (guildId: string) => request<{ key: string; description: string }[]>(`/guilds/${guildId}/embed/variables`),
   sendEmbed: (guildId: string, data: any) =>
     request<{ status: string; jump_url: string }>(`/guilds/${guildId}/embed/send`, { method: "POST", body: JSON.stringify(data) }),
+
+  getCloner: () => request<any>("/cloner"),
+  startCloner: (data: any) => request<{ id: string; status: string }>("/cloner", { method: "POST", body: JSON.stringify(data) }),
+  getClonerJob: (id: string) => request<any>(`/cloner/job/${id}`),
 
   // Team Center (bot owners only)
   getTeam: () => request<{ members: any[]; catalog: { key: string; label: string; description: string }[] }>("/admin/team"),

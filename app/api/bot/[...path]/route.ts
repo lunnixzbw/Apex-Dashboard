@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const API = process.env.BOT_API_URL || "http://127.0.0.1:8000/api/v1";
 const KEY = process.env.DASHBOARD_API_KEY;
-const ALLOWED_ROOTS = new Set(["bot", "guilds", "admin", "premium"]);
+const ALLOWED_ROOTS = new Set(["bot", "guilds", "admin", "premium", "cloner"]);
 
 async function forward(req: NextRequest, { params }: { params: { path: string[] } }) {
   if (!KEY) {
