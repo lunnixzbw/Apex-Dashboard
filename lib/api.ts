@@ -204,6 +204,10 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ keys }),
     }),
+  getTicketWelcome: (guildId: string) =>
+    request<{ title: string; message: string; image_url: string }>(`/guilds/${guildId}/tickets/welcome`),
+  updateTicketWelcome: (guildId: string, data: { title: string; message: string; image_url: string }) =>
+    request<{ status: string }>(`/guilds/${guildId}/tickets/welcome`, { method: "PATCH", body: JSON.stringify(data) }),
   createTicketPanel: (guildId: string, name?: string) =>
     request<{ status: string; id: number }>(`/guilds/${guildId}/tickets/panels`, { method: "POST", body: JSON.stringify({ name }) }),
   shareTicketPanel: (guildId: string, panelId?: number | null) =>

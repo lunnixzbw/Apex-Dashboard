@@ -115,6 +115,23 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
   const [panelId, setPanelId] = useState<number | null>(initialConfig.panel_id ?? null);
   const [presets, setPresets] = useState<{ key: string; name: string; description: string; emoji: string | null; questions: number; added: boolean }[]>([]);
   const [addingPreset, setAddingPreset] = useState<string | null>(null);
+  const [welcome, setWelcome] = useState({ title: "", message: "", image_url: "" });
+  const [savingWelcome, setSavingWelcome] = useState(false);
+
+  useEffect(() => {
+    if ((initialConfig as any).configured === false) return;
+    api.getTicketWelcome(guildId).then((w) => setWelcome({ title: w.title || "", message: w.message || "", image_url: w.image_url || "" })).catch(() => {});
+  }, [guildId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function saveWelcome() {
+    setSavingWelcome(true);
+    try {
+      await api.updateTicketWelcome(guildId, welcome);
+      toast.success("Opened ticket message saved");
+    } catch (e: any) {
+      toast.error(e?.message && e.message !== "An unknown error occurred" ? e.message : "Failed to save");
+    } finally { setSavingWelcome(false); }
+  }
 
   async function loadPresets() {
     try { const r = await api.getTicketPresets(guildId); setPresets(r.presets || []); } catch { /* optional section */ }
@@ -627,6 +644,35 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
                     </div>
                   ))}
                 </div>
+              </div>
+            </section>
+          )}
+
+          {/* Opened ticket message */}
+          {configured && (
+            <section className="bg-site-card border border-site-ink/10 rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-6 border-b border-site-ink/10 flex items-center gap-2 bg-site-card/20">
+                <MessageSquare className="h-5 w-5 text-primary" />
+                <h3 className="font-bold text-site-ink">Opened Ticket Message</h3>
+              </div>
+              <div className="p-6 space-y-4">
+                <p className="text-xs text-site-faint">The message members see inside a new ticket. Leave a box empty to use the default. Placeholders: <code>{"{user}"}</code> <code>{"{username}"}</code> <code>{"{category}"}</code> <code>{"{server}"}</code></p>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase text-site-faint tracking-widest">Title</label>
+                  <Input value={welcome.title} maxLength={200} onChange={(e) => setWelcome({ ...welcome, title: e.target.value })} placeholder="{category} Ticket" />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase text-site-faint tracking-widest">Message</label>
+                  <Textarea value={welcome.message} maxLength={1500} rows={5} onChange={(e) => setWelcome({ ...welcome, message: e.target.value })} placeholder={"Welcome {user}! Tell us what you need and our staff will be with you shortly."} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-xs font-black uppercase text-site-faint tracking-widest">Large image URL (optional)</label>
+                  <Input value={welcome.image_url} maxLength={400} onChange={(e) => setWelcome({ ...welcome, image_url: e.target.value })} placeholder="https://... (empty = no image)" />
+                </div>
+                <Button disabled={savingWelcome} className="gap-2" onClick={saveWelcome}>
+                  <Save className="h-4 w-4" />
+                  {savingWelcome ? "Saving..." : "Save Message"}
+                </Button>
               </div>
             </section>
           )}
