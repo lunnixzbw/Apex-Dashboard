@@ -16,7 +16,7 @@
 
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { 
   Plus, 
   ExternalLink,
@@ -31,7 +31,8 @@ import {
   RefreshCcw,
   MessageSquare,
   Hash,
-  Shield
+  Shield,
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -112,6 +113,25 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
   const [editingEmbed, setEditingEmbed] = useState<TicketEmbed | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [panelId, setPanelId] = useState<number | null>(initialConfig.panel_id ?? null);
+  const [presets, setPresets] = useState<{ key: string; name: string; description: string; emoji: string | null; questions: number; added: boolean }[]>([]);
+  const [addingPreset, setAddingPreset] = useState<string | null>(null);
+
+  async function loadPresets() {
+    try { const r = await api.getTicketPresets(guildId); setPresets(r.presets || []); } catch { /* optional section */ }
+  }
+  useEffect(() => { if ((initialConfig as any).configured !== false) loadPresets(); }, [guildId]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  async function addPreset(keys: string[]) {
+    setAddingPreset(keys.length === 1 ? keys[0] : "all");
+    try {
+      const r = await api.addTicketPresets(guildId, keys, panelId);
+      toast.success(r.added.length ? `Added ${r.added.join(", ")}. Press Send Panel to update the dropdown.` : "Those presets already exist.");
+      await fetchUpdatedConfig();
+      await loadPresets();
+    } catch (e: any) {
+      toast.error(e?.message || "Failed to add presets");
+    } finally { setAddingPreset(null); }
+  }
 
   async function fetchUpdatedConfig(pid: number | null = panelId) {
     try {
@@ -572,6 +592,44 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
               </div>
             </div>
           </section>
+
+          {/* Presets Section */}
+          {configured && presets.length > 0 && (
+            <section className="bg-site-card border border-site-ink/10 rounded-3xl overflow-hidden shadow-xl">
+              <div className="p-6 border-b border-site-ink/10 flex items-center justify-between bg-site-card/20">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                  <h3 className="font-bold text-site-ink">Presets</h3>
+                </div>
+                <Button size="sm" variant="outline" disabled={saving || addingPreset !== null || presets.every((p) => p.added)} className="h-8 gap-1 text-xs border-primary/20 text-primary hover:bg-primary/10"
+                  onClick={() => addPreset(presets.filter((p) => !p.added).map((p) => p.key))}>
+                  <Plus className="h-3 w-3" />
+                  Add All
+                </Button>
+              </div>
+              <div className="p-6">
+                <p className="mb-4 text-xs text-site-faint">Ready-made categories with an emoji and a short question form. Added to the panel you have selected.</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {presets.map((p) => (
+                    <div key={p.key} className="flex items-center justify-between gap-3 p-4 bg-site-card/50 rounded-2xl border border-site-ink/5">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="h-10 w-10 shrink-0 rounded-xl bg-site-ink/10 flex items-center justify-center shadow-inner overflow-hidden">
+                          <EmojiView value={p.emoji} />
+                        </div>
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate text-sm font-bold text-site-ink">{p.name}</span>
+                          <span className="truncate text-[11px] text-site-faint">{p.description}</span>
+                        </div>
+                      </div>
+                      <Button size="sm" variant="outline" disabled={p.added || saving || addingPreset !== null} className="h-8 shrink-0 text-xs" onClick={() => addPreset([p.key])}>
+                        {p.added ? "Added" : addingPreset === p.key ? "Adding..." : "Add"}
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </section>
+          )}
         </div>
 
         {/* Right Column: Stats & Configuration */}

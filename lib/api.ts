@@ -197,6 +197,13 @@ export const api = {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+  getTicketPresets: (guildId: string) =>
+    request<{ presets: { key: string; name: string; description: string; emoji: string | null; questions: number; added: boolean }[] }>(`/guilds/${guildId}/tickets/presets`),
+  addTicketPresets: (guildId: string, keys: string[], panelId?: number | null) =>
+    request<{ status: string; added: string[]; skipped: string[] }>(`/guilds/${guildId}/tickets/presets${panelId ? `?panel=${panelId}` : ""}`, {
+      method: "POST",
+      body: JSON.stringify({ keys }),
+    }),
   createTicketPanel: (guildId: string, name?: string) =>
     request<{ status: string; id: number }>(`/guilds/${guildId}/tickets/panels`, { method: "POST", body: JSON.stringify({ name }) }),
   shareTicketPanel: (guildId: string, panelId?: number | null) =>
