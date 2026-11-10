@@ -47,7 +47,7 @@ export function ClonerForm() {
     e.preventDefault();
     setBusy(true);
     try {
-      const r = await api.startCloner({ source_id: source, target_id: target, confirm_name: confirm });
+      const r = await api.startCloner({ source: source.trim(), target_id: target, confirm_name: confirm });
       toast.success("Clone started.");
       const j = await api.getClonerJob(r.id);
       setJob(j); poll(r.id);
@@ -62,26 +62,20 @@ export function ClonerForm() {
       </div>
 
       {error && <div className="rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-site-ink">{error}</div>}
-      {info && !info.enabled && (
-        <div className="rounded-2xl border border-site-ink/10 bg-site-card p-6 text-sm text-site-body">
-          The cloner is turned off. Set <code className="font-bold">CLONER_ENABLED=true</code> in the bot's environment and restart it.
-        </div>
-      )}
 
-      {info?.enabled && (
+      {info && (
         <form onSubmit={go} className="bg-site-card border border-site-ink/10 rounded-3xl p-8 space-y-6 shadow-xl shadow-black/20">
           <div className="space-y-2">
-            <label className={label}>Copy from (source)</label>
-            <select value={source} onChange={(e) => setSource(e.target.value)} className={selectCls} disabled={running}>
-              <option value="">Select a server...</option>
-              {info.guilds.map((g: any) => <option key={g.id} value={g.id}>{g.name}</option>)}
-            </select>
+            <label className={label}>Copy from</label>
+            <Input value={source} onChange={(e) => setSource(e.target.value)} placeholder="Server ID (bot must be in it) or a template link like discord.new/..."
+              disabled={running} className="py-6 font-bold" />
+            <p className="text-xs text-site-muted">A template link only needs the bot in the target server, not the source.</p>
           </div>
           <div className="space-y-2">
             <label className={label}>Copy into (target, gets wiped)</label>
             <select value={target} onChange={(e) => setTarget(e.target.value)} className={selectCls} disabled={running}>
-              <option value="">Select a server you own...</option>
-              {info.guilds.filter((g: any) => g.owner && g.id !== source).map((g: any) => (
+              <option value="">Select a server...</option>
+              {info.guilds.map((g: any) => (
                 <option key={g.id} value={g.id}>{g.name}{g.bot_admin ? "" : " (bot needs Administrator)"}</option>
               ))}
             </select>
@@ -96,7 +90,7 @@ export function ClonerForm() {
               <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder={targetGuild.name} className="py-6 font-bold" />
             </div>
           )}
-          <Button type="submit" disabled={busy || running || !source || !target || confirm.trim() !== targetGuild?.name} className="px-8 py-6 font-bold">
+          <Button type="submit" disabled={busy || running || !source.trim() || !target || confirm.trim() !== targetGuild?.name} className="px-8 py-6 font-bold">
             {running ? "Cloning..." : busy ? "Starting..." : "Start Clone"}
           </Button>
         </form>
