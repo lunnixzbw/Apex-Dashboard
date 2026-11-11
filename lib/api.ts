@@ -305,6 +305,7 @@ export const api = {
     request<{ status: string; jump_url: string }>(`/guilds/${guildId}/embed/send`, { method: "POST", body: JSON.stringify(data) }),
 
   getCloner: () => request<any>("/cloner"),
+  getClonerChannels: (guildId: string) => request<any>(`/cloner/channels/${guildId}`),
   startCloner: (data: any) => request<{ id: string; status: string }>("/cloner", { method: "POST", body: JSON.stringify(data) }),
   getClonerJob: (id: string) => request<any>(`/cloner/job/${id}`),
 

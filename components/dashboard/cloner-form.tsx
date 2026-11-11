@@ -18,7 +18,10 @@ export function ClonerForm() {
   const [confirm, setConfirm] = useState("");
   const [job, setJob] = useState<any>(null);
   const [busy, setBusy] = useState(false);
+  const [channels, setChannels] = useState<any[]>([]);
+  const [keep, setKeep] = useState<Set<string>>(new Set());
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
+  const logEnd = useRef<HTMLDivElement | null>(null);
 
   const stop = () => { if (timer.current) { clearInterval(timer.current); timer.current = null; } };
 
@@ -40,14 +43,29 @@ export function ClonerForm() {
     return stop;
   }, [poll]);
 
+  useEffect(() => {
+    setKeep(new Set());
+    setChannels([]);
+    if (!target) return;
+    api.getClonerChannels(target).then((d) => setChannels(d.channels || [])).catch(() => setChannels([]));
+  }, [target]);
+
+  useEffect(() => { logEnd.current?.scrollIntoView({ block: "nearest" }); }, [job?.log?.length]);
+
   const targetGuild = info?.guilds?.find((g: any) => g.id === target);
   const running = job?.status === "running";
+
+  const toggleKeep = (id: string) => setKeep((prev) => {
+    const next = new Set(prev);
+    if (next.has(id)) next.delete(id); else next.add(id);
+    return next;
+  });
 
   const go = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     try {
-      const r = await api.startCloner({ source: source.trim(), target_id: target, confirm_name: confirm });
+      const r = await api.startCloner({ source: source.trim(), target_id: target, confirm_name: confirm, exclude_channel_ids: [...keep] });
       toast.success("Clone started.");
       const j = await api.getClonerJob(r.id);
       setJob(j); poll(r.id);
@@ -86,6 +104,19 @@ export function ClonerForm() {
                 Every channel, role, emoji and sticker in <b>{targetGuild.name}</b> will be deleted first. This cannot be undone.
                 Messages, members and bans are not copied.
               </div>
+              {channels.length > 0 && (
+                <div className="space-y-2">
+                  <label className={label}>Keep these channels (not deleted)</label>
+                  <div className="max-h-56 overflow-y-auto rounded-xl border border-site-ink/10 divide-y divide-site-ink/10">
+                    {channels.map((c) => (
+                      <label key={c.id} className="flex items-center gap-3 px-4 py-2 text-sm text-site-body cursor-pointer hover:bg-site-ink/5">
+                        <input type="checkbox" checked={keep.has(c.id)} onChange={() => toggleKeep(c.id)} disabled={running} className="h-4 w-4" />
+                        <span className="font-bold">{c.type === 4 ? "📁" : "#"} {c.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              )}
               <label className={label}>Type the target server name to confirm</label>
               <Input value={confirm} onChange={(e) => setConfirm(e.target.value)} placeholder={targetGuild.name} className="py-6 font-bold" />
             </div>
@@ -107,6 +138,12 @@ export function ClonerForm() {
           </div>
           <p className="text-sm text-site-body">{job.step} ({job.percent}%)</p>
           {job.error && <p className="text-sm text-red-500">{job.error}</p>}
+          {job.log?.length > 0 && (
+            <div className="rounded-xl border border-site-ink/10 bg-black/30 p-3 max-h-56 overflow-y-auto font-mono text-xs text-site-muted space-y-0.5">
+              {job.log.map((line: string, i: number) => <div key={i}>{line}</div>)}
+              <div ref={logEnd} />
+            </div>
+          )}
           {job.warnings?.length > 0 && (
             <details className="text-xs text-site-muted">
               <summary className="cursor-pointer font-bold">{job.warnings.length} skipped / warnings</summary>
