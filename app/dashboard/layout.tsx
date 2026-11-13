@@ -184,8 +184,8 @@ export default function DashboardLayout({
     : [
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Servers", href: "/dashboard/guilds", icon: Server },
-        ...(isAdmin(session?.user?.id) 
-            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }] 
+        ...(isAdmin(session?.user?.id)
+            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }, { name: "Subscriptions", href: "/dashboard/admin/subscriptions", icon: Wallet }, { name: "Redeem Codes", href: "/dashboard/admin/redeem-codes", icon: Gift }]
             : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];

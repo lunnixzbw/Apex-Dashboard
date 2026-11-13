@@ -38,6 +38,8 @@ import {
   AdminConfigUpdate,
   AdminGuildList,
   AdminGuildDetail,
+  SubscriptionList,
+  RedeemCodeList,
   AntiBetrayConfig,
   AIChatConfig,
   BotProfileConfig,
@@ -409,9 +411,29 @@ export const api = {
   adminLeaveGuild: (guildId: string) => request<{ status: string }>(`/admin/guilds/${guildId}/leave`, { method: "POST", body: "{}" }),
   adminBlacklistGuild: (guildId: string, blacklisted: boolean, reason?: string) =>
     request<{ status: string }>(`/admin/guilds/${guildId}/blacklist`, { method: "POST", body: JSON.stringify({ blacklisted, reason }) }),
-  updateAdminConfig: (data: AdminConfigUpdate) => 
+  updateAdminConfig: (data: AdminConfigUpdate) =>
     request<{ status: string }>("/admin/config", {
       method: "PATCH",
       body: JSON.stringify(data),
     }),
+
+  // Subscription Manager
+  getSubscriptions: () => request<SubscriptionList>("/admin/subscriptions"),
+  grantPremium: (data: { userId: string; username?: string; duration: string }) =>
+    request<{ status: string }>("/admin/subscriptions/premium", { method: "POST", body: JSON.stringify(data) }),
+  revokePremium: (userId: string) =>
+    request<{ status: string }>(`/admin/subscriptions/premium/${userId}`, { method: "DELETE" }),
+  grantNoPrefix: (data: { userId: string; username?: string; duration: string }) =>
+    request<{ status: string }>("/admin/subscriptions/noprefix", { method: "POST", body: JSON.stringify(data) }),
+  revokeNoPrefix: (userId: string) =>
+    request<{ status: string }>(`/admin/subscriptions/noprefix/${userId}`, { method: "DELETE" }),
+
+  // Redeem Codes
+  getRedeemCodes: () => request<RedeemCodeList>("/admin/redeemcodes"),
+  createRedeemCode: (data: { perk: "premium" | "noprefix" | "custom"; customLabel?: string; duration: string; maxUses?: number; expiresInDays?: number }) =>
+    request<{ status: string; code: string }>("/admin/redeemcodes", { method: "POST", body: JSON.stringify(data) }),
+  setRedeemCodeDisabled: (id: number, disabled: boolean) =>
+    request<{ status: string }>(`/admin/redeemcodes/${id}`, { method: "PATCH", body: JSON.stringify({ disabled }) }),
+  deleteRedeemCode: (id: number) =>
+    request<{ status: string }>(`/admin/redeemcodes/${id}`, { method: "DELETE" }),
 };

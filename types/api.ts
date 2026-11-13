@@ -292,7 +292,41 @@ export interface AdminStats {
 
 export interface AdminConfig {
   maintenance_mode: boolean;
+  maintenance_reason: string | null;
   global_notification: string | null;
+}
+
+export interface SubscriptionEntry {
+  userId: string;
+  username: string;
+  expiresAt: string | null;
+  duration: string;
+  grantedBy: string;
+  expired: boolean;
+  guildLimit?: number;
+}
+
+export interface SubscriptionList {
+  premium: SubscriptionEntry[];
+  noPrefix: SubscriptionEntry[];
+}
+
+export interface RedeemCodeEntry {
+  id: number;
+  code: string;
+  perk: "premium" | "noprefix" | "custom";
+  customLabel: string | null;
+  duration: string;
+  maxUses: number;
+  uses: number;
+  expiresAt: string | null;
+  disabled: boolean;
+  createdBy: string;
+  createdAt: string;
+}
+
+export interface RedeemCodeList {
+  codes: RedeemCodeEntry[];
 }
 
 export interface AdminGuild {
@@ -322,6 +356,7 @@ export interface AdminGuildDetail extends AdminGuild {
 
 export interface AdminConfigUpdate {
   maintenance_mode?: boolean;
+  maintenance_reason?: string | null;
   global_notification?: string | null;
 }
 
