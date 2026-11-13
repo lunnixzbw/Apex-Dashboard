@@ -227,10 +227,15 @@ export const api = {
     }),
 
   getLogging: (guildId: string) => request<LoggingConfig>(`/guilds/${guildId}/logging`),
-  updateLogging: (guildId: string, data: any) => 
+  updateLogging: (guildId: string, data: any) =>
     request<{ status: string }>(`/guilds/${guildId}/logging`, {
       method: "PATCH",
       body: JSON.stringify(data),
+    }),
+  autocreateLogChannel: (guildId: string, category: string) =>
+    request<{ status: string; channel_id: string }>(`/guilds/${guildId}/logging/autocreate`, {
+      method: "POST",
+      body: JSON.stringify({ category }),
     }),
 
   getLeaderboard: (guildId: string) => request<LeaderboardEntry[]>(`/guilds/${guildId}/leveling/leaderboard`),

@@ -17,7 +17,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { 
+import {
   MessageSquare,
   UserPlus,
   ShieldAlert,
@@ -26,7 +26,8 @@ import {
   Hash,
   ChevronRight,
   BellRing,
-  Info
+  Info,
+  PlusCircle
 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -53,7 +54,27 @@ interface LoggingFormProps {
 
 export function LoggingForm({ initialConfig, channels, guildId }: LoggingFormProps) {
   const [config, setConfig] = useState<LoggingConfig>(initialConfig);
+  const [channelList, setChannelList] = useState<DiscordChannel[]>(channels);
   const [saving, setSaving] = useState(false);
+  const [creating, setCreating] = useState<string | null>(null);
+
+  const handleAutoCreate = async (categoryId: string) => {
+    setCreating(categoryId);
+    try {
+      const res = await api.autocreateLogChannel(guildId, categoryId);
+      setChannelList((prev) => [...prev, { id: res.channel_id, name: `zevion-${categoryId.replace(/_/g, "-")}` } as DiscordChannel]);
+      setConfig((c) => ({
+        ...c,
+        log_channels: { ...c.log_channels, [categoryId]: res.channel_id },
+        log_enabled: { ...c.log_enabled, [categoryId]: true },
+      }));
+      toast.success("Channel created and assigned");
+    } catch (err: any) {
+      toast.error(err?.message || "Failed to create channel");
+    } finally {
+      setCreating(null);
+    }
+  };
 
   const handleToggle = async (categoryId: string, enabled: boolean) => {
     // Optimistic update
@@ -96,7 +117,7 @@ export function LoggingForm({ initialConfig, channels, guildId }: LoggingFormPro
     }
   };
 
-  const channelOptions = channels.map(c => ({
+  const channelOptions = channelList.map(c => ({
     value: c.id.toString(),
     label: `#${c.name}`
   }));
@@ -122,13 +143,21 @@ export function LoggingForm({ initialConfig, channels, guildId }: LoggingFormPro
                   <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 md:gap-8 lg:min-w-[320px]">
                      <div className="w-full sm:w-48 lg:w-56">
                         <p className="text-[10px] font-black uppercase text-site-faint mb-2 tracking-widest pl-1">Destination</p>
-                        <Select 
+                        <Select
                           value={config.log_channels[cat.id]?.toString() || ""}
                           onValueChange={(val) => handleChannelChange(cat.id, val)}
                           options={channelOptions}
                           placeholder="Select channel..."
                           className="bg-site-bg/20 border-site-ink/10 rounded-xl"
                         />
+                        <button
+                          onClick={() => handleAutoCreate(cat.id)}
+                          disabled={creating === cat.id}
+                          className="mt-2 inline-flex items-center gap-1.5 text-[11px] font-bold text-primary hover:opacity-80 transition-opacity disabled:opacity-50"
+                        >
+                          <PlusCircle className="h-3.5 w-3.5" />
+                          {creating === cat.id ? "Creating..." : "Create channel for me"}
+                        </button>
                      </div>
 
                      <div className="flex items-center gap-4 border-l border-site-ink/[0.05] pl-4 md:pl-8">
