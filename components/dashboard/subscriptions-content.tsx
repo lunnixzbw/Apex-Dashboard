@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Wallet, Crown, Zap, Trash2, RefreshCw, Plus } from "lucide-react";
+import { Wallet, Crown, Zap, Trash2, RefreshCw, Plus, Server } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { cn } from "@/lib/utils";
@@ -54,7 +54,7 @@ function GrantForm({ kind, onGranted }: { kind: "premium" | "noprefix"; onGrante
   );
 }
 
-function SubscriptionTable({ title, icon: Icon, rows, onRevoke }: { title: string; icon: any; rows: SubscriptionEntry[]; onRevoke: (userId: string) => void }) {
+function SubscriptionTable({ title, icon: Icon, rows, onRevoke, showGuilds }: { title: string; icon: any; rows: SubscriptionEntry[]; onRevoke: (userId: string) => void; showGuilds?: boolean }) {
   const [busy, setBusy] = useState<string | null>(null);
   const revoke = async (userId: string) => {
     if (!window.confirm(`Revoke this for ${userId}?`)) return;
@@ -75,19 +75,35 @@ function SubscriptionTable({ title, icon: Icon, rows, onRevoke }: { title: strin
       </div>
       <div className="grid gap-2">
         {rows.map((r) => (
-          <div key={r.userId} className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 rounded-2xl bg-site-ink/[0.02] border border-site-ink/5">
-            <div className="min-w-0 flex-1">
-              <p className="font-bold text-site-ink text-sm truncate">{r.username}</p>
-              <p className="text-[11px] text-site-faint font-mono truncate">{r.userId}</p>
+          <div key={r.userId} className="flex flex-col gap-3 p-3 rounded-2xl bg-site-ink/[0.02] border border-site-ink/5">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="font-bold text-site-ink text-sm truncate">{r.username}</p>
+                <p className="text-[11px] text-site-faint font-mono truncate">{r.userId}</p>
+              </div>
+              <div className="flex items-center gap-3 text-[11px] text-site-muted font-medium shrink-0">
+                <span className={cn("px-2 py-1 rounded-lg border", r.expired ? "border-red-500/20 bg-red-500/10 text-red-400" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400")}>
+                  {r.expired ? "Expired" : formatExpiry(r.expiresAt)}
+                </span>
+                <button disabled={busy === r.userId} onClick={() => revoke(r.userId)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-[11px] font-black uppercase tracking-wider hover:bg-red-500/20 transition-colors disabled:opacity-50">
+                  <Trash2 className="h-3.5 w-3.5" /> Revoke
+                </button>
+              </div>
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-site-muted font-medium shrink-0">
-              <span className={cn("px-2 py-1 rounded-lg border", r.expired ? "border-red-500/20 bg-red-500/10 text-red-400" : "border-emerald-500/20 bg-emerald-500/10 text-emerald-400")}>
-                {r.expired ? "Expired" : formatExpiry(r.expiresAt)}
-              </span>
-              <button disabled={busy === r.userId} onClick={() => revoke(r.userId)} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-red-500/20 bg-red-500/10 text-red-400 text-[11px] font-black uppercase tracking-wider hover:bg-red-500/20 transition-colors disabled:opacity-50">
-                <Trash2 className="h-3.5 w-3.5" /> Revoke
-              </button>
-            </div>
+            {showGuilds && (
+              <div className="flex flex-wrap items-center gap-1.5 pl-0.5">
+                <Server className="h-3 w-3 text-site-faint shrink-0" />
+                {(r.activeGuilds?.length || 0) === 0 ? (
+                  <span className="text-[11px] text-site-faint italic">Not activated on any server yet</span>
+                ) : (
+                  r.activeGuilds!.map((g) => (
+                    <span key={g.guildId} className="px-2 py-0.5 rounded-md bg-site-ink/[0.05] border border-site-ink/10 text-[11px] text-site-muted font-medium">
+                      {g.guildName}
+                    </span>
+                  ))
+                )}
+              </div>
+            )}
           </div>
         ))}
         {rows.length === 0 && <p className="text-center text-site-faint text-sm py-6">None active.</p>}
@@ -140,7 +156,7 @@ export function SubscriptionsContent() {
 
       {data && (
         <>
-          <SubscriptionTable title="Premium" icon={Crown} rows={data.premium} onRevoke={async (id) => { await api.revokePremium(id); toast.success("Revoked"); load(); }} />
+          <SubscriptionTable title="Premium" icon={Crown} rows={data.premium} showGuilds onRevoke={async (id) => { await api.revokePremium(id); toast.success("Revoked"); load(); }} />
           <SubscriptionTable title="No-Prefix" icon={Zap} rows={data.noPrefix} onRevoke={async (id) => { await api.revokeNoPrefix(id); toast.success("Revoked"); load(); }} />
         </>
       )}

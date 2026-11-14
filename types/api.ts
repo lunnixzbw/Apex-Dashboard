@@ -304,6 +304,7 @@ export interface SubscriptionEntry {
   grantedBy: string;
   expired: boolean;
   guildLimit?: number;
+  activeGuilds?: { guildId: string; guildName: string }[];
 }
 
 export interface SubscriptionList {
