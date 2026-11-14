@@ -316,6 +316,10 @@ export const api = {
   startCloner: (data: any) => request<{ id: string; status: string }>("/cloner", { method: "POST", body: JSON.stringify(data) }),
   getClonerJob: (id: string) => request<any>(`/cloner/job/${id}`),
 
+  // Any signed-in user can check their own delegated permissions (used to show owner-only nav
+  // items, like the Server Cloner, to someone who was delegated access without being a full admin).
+  getMyPermissions: () => request<{ is_owner: boolean; permissions: string[] }>("/me/permissions"),
+
   // Team Center (bot owners only)
   getTeam: () => request<{ members: any[]; catalog: { key: string; label: string; description: string }[] }>("/admin/team"),
   lookupTeamUser: (id: string) => request<any>(`/admin/team/lookup/${id}`),

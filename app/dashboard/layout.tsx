@@ -49,6 +49,13 @@ export default function DashboardLayout({
     if (status !== "authenticated") return;
     fetch("/api/staff/me").then((r) => r.json()).then((d) => setIsSupport(!!d.support)).catch(() => {});
   }, [status]);
+  // Someone delegated the "Server Cloner" permission from Team Center isn't a full admin
+  // (NEXT_PUBLIC_ADMIN_IDS), so isAdmin() alone would hide the nav link for them.
+  const [canClone, setCanClone] = useState(false);
+  useEffect(() => {
+    if (status !== "authenticated") return;
+    api.getMyPermissions().then((d) => setCanClone(d.is_owner || d.permissions.includes("clone"))).catch(() => {});
+  }, [status]);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [globalNotification, setGlobalNotification] = useState<string | null>(null);
   
@@ -186,7 +193,7 @@ export default function DashboardLayout({
         { name: "Servers", href: "/dashboard/guilds", icon: Server },
         ...(isAdmin(session?.user?.id)
             ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }, { name: "Subscriptions", href: "/dashboard/admin/subscriptions", icon: Wallet }, { name: "Redeem Codes", href: "/dashboard/admin/redeem-codes", icon: Gift }]
-            : []),
+            : canClone ? [{ name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }] : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];
 
