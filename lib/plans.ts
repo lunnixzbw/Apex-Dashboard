@@ -38,15 +38,22 @@ export function formatPrice(paise: number): string {
 }
 
 export const PREMIUM_BENEFITS = [
+  { title: "Custom Server Branding", text: "Set a custom avatar, banner and bio for your server." },
+  { title: "Zevion AI", text: "Ask, analyse and auto-reply with AI chat directly through Zevion." },
   { title: "Anti-Betray", text: "Advanced protection against betrayal-related activities." },
-  { title: "AI Chat", text: "Interact with AI directly through Zevion." },
-  { title: "Bot Profile", text: "Customize and manage your bot profile." },
+  { title: "Bot Profile", text: "Customize and manage your bot's profile." },
+  { title: "Tag & Vanity Rewards", text: "Tag Supporter and Vanity Role rewards, plus Boost thank-yous." },
+  { title: "Join DMs", text: "Automatic DM notifications when members join." },
+  { title: "YouTube Notifications", text: "Get notified in your server when a channel you follow uploads." },
   { title: "Giveaways", text: "Access more giveaway customization and options." },
   { title: "Ticket Panels", text: "Create up to 10 ticket panels." },
   { title: "Applications", text: "Create and manage more application forms." },
-  { title: "Premium Commands", text: "Unlock additional Premium-exclusive commands." },
-  { title: "Exclusive Perks", text: "Get access to more Premium features and benefits." },
+  { title: "Higher Limits", text: "Higher limits across the bot's tools." },
+  { title: "Priority Support", text: "Jump the queue in the support server." },
 ];
+
+// Short titles shown directly on each pricing card (the fuller text stays in the Benefits section below).
+export const PREMIUM_FEATURE_TITLES = PREMIUM_BENEFITS.map((b) => b.title);
 
 export const NOPREFIX_BENEFITS = [
   { title: "No prefix needed", text: "Run any command without typing the prefix, just the command name." },

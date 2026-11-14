@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { Check, CheckCircle2, Crown, Loader2, ShieldCheck } from "lucide-react";
-import { NOPREFIX_BENEFITS, NOPREFIX_PLANS, PREMIUM_BENEFITS, PREMIUM_PLANS, formatPrice, type Plan, type Product } from "@/lib/plans";
+import { NOPREFIX_BENEFITS, NOPREFIX_PLANS, PREMIUM_BENEFITS, PREMIUM_FEATURE_TITLES, PREMIUM_PLANS, formatPrice, type Plan, type Product } from "@/lib/plans";
 import { BRAND } from "@/lib/site";
 
 declare global { interface Window { Razorpay?: any } }
@@ -162,9 +162,19 @@ export function PremiumClient() {
             <ul className="mt-6 flex-1 space-y-2.5 text-sm text-site-muted">
               <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {p.lifetime ? `Lifetime ${label}, never expires` : `${p.days} days of ${label}`}</li>
               {product === "premium" && <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> Use on {p.servers} server{p.servers > 1 ? "s" : ""}</li>}
-              <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {product === "premium" ? "Every Premium feature" : "Every command, no prefix"}</li>
               <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {p.lifetime ? "Replaces any time-limited plan" : "Adds to time you already have"}</li>
+              {product === "noprefix" && <li className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> Every command, no prefix</li>}
             </ul>
+            {product === "premium" && (
+              <div className="mt-5 border-t border-site-ink/10 pt-5">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-site-faint">Everything included</p>
+                <ul className="mt-3 space-y-2 text-sm text-site-muted">
+                  {PREMIUM_FEATURE_TITLES.map((title) => (
+                    <li key={title} className="flex gap-2.5"><Check className="mt-0.5 h-4 w-4 shrink-0 text-site-ink" /> {title}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
             {enabled === false ? (
               <a href="/support" className="mt-7 inline-flex h-11 items-center justify-center rounded-xl bg-site-ink text-sm font-semibold text-site-bg transition hover:opacity-85">
                 Get it via support
