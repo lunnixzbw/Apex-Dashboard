@@ -29,7 +29,7 @@ html.dark {
   --site-muted: 161 161 170;
   --site-faint: 113 113 122;
 }
-/* The dragon logo is white artwork: turn it black on the light theme. */
+/* The wolf logo is white artwork: turn it black on the light theme. */
 html:not(.dark) .site-logo { filter: invert(1); }
 
 body {

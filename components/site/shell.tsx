@@ -2,7 +2,7 @@ import React from "react";
 import { SiteNav } from "./nav";
 import { SiteFooter } from "./footer";
 
-// Black and white page frame used by every public page: nav, dragon watermark, footer.
+// Black and white page frame used by every public page: nav, wolf watermark, footer.
 export function SiteShell({ children, base = "" }: { children: React.ReactNode; base?: string }) {
   return (
     <div className="relative min-h-screen overflow-x-hidden bg-site-bg font-sans text-site-body selection:bg-site-ink/20">
