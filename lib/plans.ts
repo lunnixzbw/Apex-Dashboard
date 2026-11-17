@@ -48,7 +48,7 @@ export const PREMIUM_BENEFITS = [
   { title: "Giveaways", text: "Access more giveaway customization and options." },
   { title: "Ticket Panels", text: "Create up to 10 ticket panels." },
   { title: "Applications", text: "Create and manage more application forms." },
-  { title: "Higher Limits", text: "Higher limits across the bot's tools." },
+  { title: "Higher Limits", text: "Higher limits across the bot's tools, including up to 5 Extra Owners (2 on Free)." },
   { title: "Priority Support", text: "Jump the queue in the support server." },
 ];
 

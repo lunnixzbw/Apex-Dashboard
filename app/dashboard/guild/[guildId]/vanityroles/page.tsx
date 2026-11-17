@@ -44,9 +44,9 @@ export default function VanityRolesPage({ params }: { params: { guildId: string 
       setSetups(setupsData);
       setRoles(rolesData);
       setChannels(channelsData);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to fetch vanity roles data:", error);
-      toast.error("Failed to load vanity roles configuration");
+      toast.error(error?.message || "Failed to load vanity roles configuration");
     } finally {
       setLoading(false);
     }
@@ -72,8 +72,8 @@ export default function VanityRolesPage({ params }: { params: { guildId: string 
       toast.success("Vanity role setup added!");
       setNewSetup({ vanity: "", role_id: "", log_channel_id: "" });
       fetchData();
-    } catch (error) {
-      toast.error("Failed to add vanity role setup");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to add vanity role setup");
     } finally {
       setSaving(false);
     }
@@ -84,8 +84,8 @@ export default function VanityRolesPage({ params }: { params: { guildId: string 
       await api.deleteVanityRole(params.guildId, vanity);
       toast.success("Vanity role setup deleted");
       fetchData();
-    } catch (error) {
-      toast.error("Failed to delete vanity role setup");
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to delete vanity role setup");
     }
   };
 
