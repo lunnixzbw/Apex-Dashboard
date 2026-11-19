@@ -25,7 +25,7 @@ import {
   LifeBuoy, ChevronDown, Bot, Shield, Youtube, Copy
 } from "lucide-react";
 import {
-  PenLine, UsersRound, BadgeCheck, BarChart3, BarChartHorizontal, BellRing, Cake, ClipboardList, Crown, Eye, Flame, FlaskConical, Gift, Inbox, LayoutGrid, Lightbulb, Link2, Lock, Mail, MessageSquareQuote, Mic, Palette, PartyPopper, Rocket, ScrollText, Share2, ShieldAlert, Smile, SmilePlus, Swords, Tag, Trash2, TrendingUp, UserPlus, Volume2, Wallet
+  PenLine, UsersRound, BadgeCheck, BarChart3, BarChartHorizontal, BellRing, Cake, ClipboardList, Crown, Eye, Flame, FlaskConical, Gift, Inbox, LayoutGrid, Lightbulb, Link2, Lock, Mail, MessageSquareQuote, Mic, Palette, PartyPopper, QrCode, Rocket, ScrollText, Share2, ShieldAlert, Smile, SmilePlus, Swords, Tag, Trash2, TrendingUp, UserPlus, Volume2, Wallet
 } from "lucide-react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import { cn, isAdmin } from "@/lib/utils";
@@ -192,7 +192,7 @@ export default function DashboardLayout({
         { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
         { name: "Servers", href: "/dashboard/guilds", icon: Server },
         ...(isAdmin(session?.user?.id)
-            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }, { name: "Subscriptions", href: "/dashboard/admin/subscriptions", icon: Wallet }, { name: "Redeem Codes", href: "/dashboard/admin/redeem-codes", icon: Gift }]
+            ? [{ name: "Admin Panel", href: "/dashboard/admin", icon: Shield }, { name: "Team Center", href: "/dashboard/admin/team", icon: UsersRound }, { name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }, { name: "Subscriptions", href: "/dashboard/admin/subscriptions", icon: Wallet }, { name: "Redeem Codes", href: "/dashboard/admin/redeem-codes", icon: Gift }, { name: "Manual Payments", href: "/dashboard/admin/manual-payments", icon: QrCode }]
             : canClone ? [{ name: "Server Cloner", href: "/dashboard/admin/cloner", icon: Copy }] : []),
         { name: "Support Tickets", href: "/dashboard/support", icon: LifeBuoy },
       ];

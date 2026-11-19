@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
-import { Check, CheckCircle2, Crown, Loader2, ShieldCheck } from "lucide-react";
+import { Check, CheckCircle2, Clock, Copy, Crown, Loader2, QrCode, ShieldCheck, X } from "lucide-react";
 import { NOPREFIX_BENEFITS, NOPREFIX_PLANS, PREMIUM_BENEFITS, PREMIUM_FEATURE_TITLES, PREMIUM_PLANS, formatPrice, type Plan, type Product } from "@/lib/plans";
 import { BRAND } from "@/lib/site";
 
@@ -11,6 +11,8 @@ declare global { interface Window { Razorpay?: any } }
 
 type Me = { noprefix?: { active: boolean; permanent?: boolean; expires_at?: string | null }; active: boolean; permanent: boolean; expires_at: string | null; guild_limit: number; activations: { guild_id: string; guild_name: string }[] };
 type Guild = { id: string; name: string; icon_url: string | null };
+type PayConfig = { enabled: boolean; razorpay: boolean; manual: boolean };
+type ManualOrder = { order_id: string; vpa: string; amount: number; currency: string; upi_uri: string; qr: string };
 
 async function api(path: string, init?: RequestInit) {
   const r = await fetch(path, { ...init, headers: { "Content-Type": "application/json", ...(init?.headers || {}) }, cache: "no-store" });
@@ -37,13 +39,20 @@ export function PremiumClient() {
   const { status } = useSession();
   const signedIn = status === "authenticated";
   const [product, setProduct] = useState<Product>("premium");
-  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [payCfg, setPayCfg] = useState<PayConfig | null>(null);
   const [me, setMe] = useState<Me | null>(null);
   const [guilds, setGuilds] = useState<Guild[]>([]);
   const [busyPlan, setBusyPlan] = useState<string | null>(null);
   const [busyGuild, setBusyGuild] = useState<string | null>(null);
   const [notice, setNotice] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [pickMethodFor, setPickMethodFor] = useState<Plan | null>(null);
+  const [manualPlan, setManualPlan] = useState<Plan | null>(null);
+  const [manualOrder, setManualOrder] = useState<ManualOrder | null>(null);
+  const [manualStatus, setManualStatus] = useState<string>("pending_payment");
+  const [utr, setUtr] = useState("");
+  const [manualSubmitting, setManualSubmitting] = useState(false);
   const signing = useRef(false);
+  const enabled = payCfg?.enabled ?? null;
 
   const refresh = useCallback(async () => {
     try {
@@ -55,8 +64,32 @@ export function PremiumClient() {
     }
   }, []);
 
-  useEffect(() => { api("/api/payments/config").then((d) => setEnabled(!!d.enabled)).catch(() => setEnabled(false)); }, []);
+  useEffect(() => { api("/api/payments/config").then((d) => setPayCfg({ enabled: !!d.enabled, razorpay: !!d.razorpay, manual: !!d.manual })).catch(() => setPayCfg({ enabled: false, razorpay: false, manual: false })); }, []);
   useEffect(() => { if (signedIn) refresh(); }, [signedIn, refresh]);
+
+  // Poll for staff approval/rejection while a manual-UPI order sits "submitted".
+  useEffect(() => {
+    if (!manualOrder || manualStatus !== "submitted") return;
+    const id = setInterval(async () => {
+      try {
+        const s = await api(`/api/payments/manual/status/${encodeURIComponent(manualOrder.order_id)}`);
+        if (s.status && s.status !== manualStatus) {
+          setManualStatus(s.status);
+          if (s.status === "approved") {
+            setNotice({ kind: "ok", text: manualPlan?.product === "noprefix"
+              ? "Your UPI payment was approved. No-Prefix is now active."
+              : `Your UPI payment was approved. ${BRAND} Premium is now active. Choose a server below to use it.` });
+            setManualOrder(null);
+            setManualPlan(null);
+            await refresh();
+          } else if (s.status === "rejected") {
+            setNotice({ kind: "err", text: "Your UPI payment was rejected by staff. If you believe this is a mistake, contact support with your order ID." });
+          }
+        }
+      } catch { /* keep polling silently */ }
+    }, 5000);
+    return () => clearInterval(id);
+  }, [manualOrder, manualStatus, manualPlan, refresh]);
 
   const login = () => {
     if (signing.current) return;
@@ -64,9 +97,17 @@ export function PremiumClient() {
     signIn("discord", { callbackUrl: "/premium" });
   };
 
-  const buy = async (plan: Plan) => {
+  const buy = (plan: Plan) => {
     if (!signedIn) return login();
     if (busyPlan) return;
+    const canRzp = !!payCfg?.razorpay;
+    const canManual = !!payCfg?.manual;
+    if (canRzp && canManual) return setPickMethodFor(plan);
+    if (canManual && !canRzp) return startManual(plan);
+    return buyRazorpay(plan);
+  };
+
+  const buyRazorpay = async (plan: Plan) => {
     setBusyPlan(plan.id);
     setNotice(null);
     try {
@@ -105,6 +146,47 @@ export function PremiumClient() {
       setNotice({ kind: "err", text: e.message });
       setBusyPlan(null);
     }
+  };
+
+  const startManual = async (plan: Plan) => {
+    setPickMethodFor(null);
+    setBusyPlan(plan.id);
+    setNotice(null);
+    try {
+      const o = await api("/api/payments/manual/order", { method: "POST", body: JSON.stringify({ planId: plan.id }) });
+      setManualPlan(plan);
+      setManualOrder(o);
+      setManualStatus("pending_payment");
+      setUtr("");
+    } catch (e: any) {
+      setNotice({ kind: "err", text: e.message });
+    } finally {
+      setBusyPlan(null);
+    }
+  };
+
+  const submitManualUtr = async () => {
+    if (!manualOrder) return;
+    const clean = utr.trim();
+    if (!/^\d{12}$/.test(clean)) {
+      setNotice({ kind: "err", text: "Enter the 12-digit UTR / reference number from your UPI app." });
+      return;
+    }
+    setManualSubmitting(true);
+    try {
+      const r = await api("/api/payments/manual/submit", { method: "POST", body: JSON.stringify({ order_id: manualOrder.order_id, utr: clean }) });
+      setManualStatus(r.status === "already_submitted" ? "submitted" : r.status);
+    } catch (e: any) {
+      setNotice({ kind: "err", text: e.message });
+    } finally {
+      setManualSubmitting(false);
+    }
+  };
+
+  const copyVpa = () => {
+    if (!manualOrder) return;
+    navigator.clipboard?.writeText(manualOrder.vpa).catch(() => {});
+    setNotice({ kind: "ok", text: "UPI ID copied." });
   };
 
   const toggle = async (g: Guild, on: boolean) => {
@@ -191,6 +273,81 @@ export function PremiumClient() {
           </div>
         ))}
       </div>
+
+      {/* Payment method picker, when both Razorpay and manual UPI are available */}
+      {pickMethodFor && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => setPickMethodFor(null)}>
+          <div className="w-full max-w-sm rounded-2xl border border-site-ink/10 bg-site-bg p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-outfit text-lg font-semibold text-site-ink">Pay with</h3>
+              <button onClick={() => setPickMethodFor(null)} className="text-site-faint hover:text-site-ink"><X className="h-4 w-4" /></button>
+            </div>
+            <p className="mt-1 text-sm text-site-muted">{pickMethodFor.name} — {formatPrice(pickMethodFor.amount)}</p>
+            <div className="mt-5 space-y-2.5">
+              <button onClick={() => buyRazorpay(pickMethodFor)} className="flex w-full items-center justify-between rounded-xl border border-site-ink/15 p-4 text-left transition hover:bg-site-ink/5">
+                <span className="text-sm font-semibold text-site-ink">Razorpay (UPI, cards, net banking)</span>
+                <ShieldCheck className="h-4 w-4 text-site-faint" />
+              </button>
+              <button onClick={() => startManual(pickMethodFor)} className="flex w-full items-center justify-between rounded-xl border border-site-ink/15 p-4 text-left transition hover:bg-site-ink/5">
+                <span className="text-sm font-semibold text-site-ink">Manual UPI (QR) — approved by staff</span>
+                <QrCode className="h-4 w-4 text-site-faint" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manual UPI order: show QR + VPA, collect UTR, then poll for staff approval */}
+      {manualOrder && manualPlan && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={() => manualStatus === "pending_payment" && setManualOrder(null)}>
+          <div className="w-full max-w-sm rounded-2xl border border-site-ink/10 bg-site-bg p-6" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <h3 className="font-outfit text-lg font-semibold text-site-ink">Pay by UPI QR</h3>
+              {manualStatus === "pending_payment" && (
+                <button onClick={() => setManualOrder(null)} className="text-site-faint hover:text-site-ink"><X className="h-4 w-4" /></button>
+              )}
+            </div>
+            <p className="mt-1 text-sm text-site-muted">{manualPlan.name} — {formatPrice(manualOrder.amount)}</p>
+
+            {manualStatus === "pending_payment" && (
+              <>
+                <div className="mt-4 flex justify-center">
+                  <img src={manualOrder.qr} alt="UPI QR code" className="h-56 w-56 rounded-xl border border-site-ink/10 bg-white p-2" />
+                </div>
+                <div className="mt-3 flex items-center justify-center gap-2 text-sm text-site-ink">
+                  <span className="font-mono">{manualOrder.vpa}</span>
+                  <button onClick={copyVpa} className="text-site-faint hover:text-site-ink"><Copy className="h-3.5 w-3.5" /></button>
+                </div>
+                <p className="mt-1 text-center text-xs text-site-faint">Order <span className="font-mono">{manualOrder.order_id}</span></p>
+                <p className="mt-4 text-xs text-site-faint">Scan the QR (or pay {manualOrder.vpa} directly) for exactly {formatPrice(manualOrder.amount)}, then enter the 12-digit UTR / reference number from your UPI app below.</p>
+                <input
+                  value={utr}
+                  onChange={(e) => setUtr(e.target.value.replace(/\D/g, "").slice(0, 12))}
+                  placeholder="12-digit UTR"
+                  className="mt-3 w-full rounded-xl border border-site-ink/15 bg-site-card px-3 py-2.5 text-sm text-site-ink placeholder:text-site-faint focus:outline-none focus:ring-1 focus:ring-site-ink/30"
+                />
+                <button
+                  onClick={submitManualUtr}
+                  disabled={manualSubmitting || utr.length !== 12}
+                  className="mt-3 inline-flex h-11 w-full items-center justify-center gap-2 rounded-xl bg-site-ink text-sm font-semibold text-site-bg transition hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {manualSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Submitting...</> : "I have paid"}
+                </button>
+                <p className="mt-3 flex items-center gap-1.5 text-[11px] text-site-faint"><ShieldCheck className="h-3.5 w-3.5 shrink-0" /> This is not instant — staff manually verify every UTR before {manualPlan.product === "noprefix" ? "No-Prefix" : "Premium"} is granted.</p>
+              </>
+            )}
+
+            {manualStatus === "submitted" && (
+              <div className="mt-5 flex flex-col items-center gap-3 py-4 text-center">
+                <Clock className="h-8 w-8 text-site-faint" />
+                <p className="text-sm text-site-muted">Thanks! Your payment for order <span className="font-mono text-site-ink">{manualOrder.order_id}</span> is awaiting staff review. This page will update automatically once it's checked.</p>
+                <button onClick={() => setManualOrder(null)} className="mt-2 text-xs text-site-faint underline underline-offset-2 hover:text-site-ink">Close (you'll still get a DM)</button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-center text-xs text-site-faint">
         <ShieldCheck className="h-3.5 w-3.5" /> {enabled === false ? "Online checkout is not open yet. Open a ticket in the support server to buy." : "Secure payment by Razorpay: UPI, cards, net banking and wallets. We never see your payment details."}
         <span>By buying you agree to the <Link href="/terms" className="underline underline-offset-2">Terms</Link> and <Link href="/refund" className="underline underline-offset-2">Refund Policy</Link>.</span>

@@ -446,3 +446,46 @@ export interface JailConfig {
   active: JailRecordItem[];
   history: JailRecordItem[];
 }
+
+// Manual (personal UPI VPA) payments — the review-gated fallback to Razorpay. See
+// lib/manualPayment.ts and src/dashboard/routes/manualPayments.js on the bot.
+export interface ManualOrder {
+  order_id: string;
+  vpa: string;
+  amount: number;
+  currency: string;
+  upi_uri: string;
+  qr: string; // data: URL, generated on the server
+}
+
+export type ManualOrderStatus = "pending_payment" | "submitted" | "approved" | "rejected" | "already_submitted";
+
+export interface ManualOrderStatusResponse {
+  status: ManualOrderStatus;
+  expires_at?: string | null;
+}
+
+export interface ManualPaymentEntry {
+  id: number;
+  orderId: string;
+  userId: string;
+  username: string | null;
+  product: "premium" | "noprefix";
+  planId: string;
+  days: number;
+  lifetime: boolean;
+  amount: number;
+  currency: string;
+  vpa: string;
+  utr: string | null;
+  status: ManualOrderStatus;
+  submittedAt: string | null;
+  reviewedBy: string | null;
+  reviewedAt: string | null;
+  rejectReason: string | null;
+  createdAt: string;
+}
+
+export interface ManualPaymentList {
+  orders: ManualPaymentEntry[];
+}

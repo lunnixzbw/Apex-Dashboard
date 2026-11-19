@@ -49,6 +49,7 @@ import {
   AutoresponderList,
   AutoresponderItem,
   UpiConfig,
+  ManualPaymentList,
 } from "@/types/api";
 
 // Browser  -> same-origin proxy (app/api/bot), which adds the secret key and the signed-in user.
@@ -445,4 +446,13 @@ export const api = {
     request<{ status: string }>(`/admin/redeemcodes/${id}`, { method: "PATCH", body: JSON.stringify({ disabled }) }),
   deleteRedeemCode: (id: number) =>
     request<{ status: string }>(`/admin/redeemcodes/${id}`, { method: "DELETE" }),
+
+  // Manual (personal UPI VPA) payments — review queue. Creating an order / submitting a UTR
+  // happens through the dedicated /api/payments/manual/* routes instead (they also generate the
+  // QR code), not here.
+  getManualPayments: () => request<ManualPaymentList>("/admin/manual-payments"),
+  approveManualPayment: (id: number) =>
+    request<{ status: string }>(`/admin/manual-payments/${id}/approve`, { method: "POST", body: "{}" }),
+  rejectManualPayment: (id: number, reason?: string) =>
+    request<{ status: string }>(`/admin/manual-payments/${id}/reject`, { method: "POST", body: JSON.stringify({ reason }) }),
 };

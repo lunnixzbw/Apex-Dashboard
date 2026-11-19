@@ -16,6 +16,7 @@
     "lucide-react": "^0.378.0",
     "next": "14.2.3",
     "next-auth": "^4.24.13",
+    "qrcode": "^1.5.4",
     "react": "^18",
     "react-dom": "^18",
     "sonner": "^2.0.7",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.19.37",
+    "@types/qrcode": "^1.5.5",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "eslint": "^8",
