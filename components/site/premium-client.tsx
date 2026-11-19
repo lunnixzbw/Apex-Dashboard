@@ -340,8 +340,8 @@ export function PremiumClient() {
             {manualStatus === "submitted" && (
               <div className="mt-5 flex flex-col items-center gap-3 py-4 text-center">
                 <Clock className="h-8 w-8 text-site-faint" />
-                <p className="text-sm text-site-muted">Thanks! Your payment for order <span className="font-mono text-site-ink">{manualOrder.order_id}</span> is awaiting staff review. This page will update automatically once it's checked.</p>
-                <button onClick={() => setManualOrder(null)} className="mt-2 text-xs text-site-faint underline underline-offset-2 hover:text-site-ink">Close (you'll still get a DM)</button>
+                <p className="text-sm text-site-muted">Thanks! Your payment for order <span className="font-mono text-site-ink">{manualOrder.order_id}</span> is awaiting staff review. This page will update automatically once it&apos;s checked.</p>
+                <button onClick={() => setManualOrder(null)} className="mt-2 text-xs text-site-faint underline underline-offset-2 hover:text-site-ink">Close (you&apos;ll still get a DM)</button>
               </div>
             )}
           </div>

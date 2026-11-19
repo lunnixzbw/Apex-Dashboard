@@ -145,7 +145,7 @@ export function ManualPaymentsContent() {
       </div>
 
       <p className="flex items-center gap-2 text-[11px] text-site-faint">
-        <Clock className="h-3.5 w-3.5" /> This isn't automatic — payments land on a personal UPI ID, so every order needs a human check here or via the Discord staff notification before it's granted.
+        <Clock className="h-3.5 w-3.5" /> This isn&apos;t automatic — payments land on a personal UPI ID, so every order needs a human check here or via the Discord staff notification before it&apos;s granted.
       </p>
 
       <div className="grid gap-2">
