@@ -229,16 +229,26 @@ export interface WelcomeUpdate {
   auto_delete_duration?: number | null;
 }
 
+export interface AntiNukeWhitelistEntry {
+  user_id: string;
+  // null = exempt from every category (the old, pre-granular behavior)
+  events: string[] | null;
+}
+
 export interface AntiNukeConfig {
   guild_id: string;
   status: boolean;
   whitelisted_users?: string[];
+  whitelist?: AntiNukeWhitelistEntry[];
+  // category key -> display label, e.g. { ban: "Ban", kick: "Kick", ... }
+  whitelist_categories?: Record<string, string>;
 }
 
 export interface AntiNukeUpdate {
   status?: boolean;
   add_whitelist?: string;
   remove_whitelist?: string;
+  whitelist_events?: { user_id: string; events: string[] | null };
 }
 
 export interface VerificationConfig {
