@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Reply, Plus, Trash2, RefreshCcw } from "lucide-react";
+import { Reply, Plus, Trash2, RefreshCcw, Pencil, Check, X } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,11 @@ export default function AutoresponderPage({ params }: { params: { guildId: strin
   const [trigger, setTrigger] = useState("");
   const [response, setResponse] = useState("");
   const [caseSensitive, setCaseSensitive] = useState(false);
+
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editTrigger, setEditTrigger] = useState("");
+  const [editResponse, setEditResponse] = useState("");
+  const [editCaseSensitive, setEditCaseSensitive] = useState(false);
 
   const load = async () => {
     try { setData(await api.getAutoresponders(params.guildId)); }
@@ -39,6 +44,25 @@ export default function AutoresponderPage({ params }: { params: { guildId: strin
       await api.createAutoresponder(params.guildId, { trigger, response, case_sensitive: caseSensitive });
       setTrigger(""); setResponse(""); setCaseSensitive(false);
     }, "Autoresponder added");
+
+  const startEdit = (it: AutoresponderList["items"][number]) => {
+    setEditingId(it.id);
+    setEditTrigger(it.trigger);
+    setEditResponse(it.response);
+    setEditCaseSensitive(it.case_sensitive);
+  };
+
+  const cancelEdit = () => setEditingId(null);
+
+  const saveEdit = (id: number) =>
+    run(async () => {
+      await api.updateAutoresponder(params.guildId, id, {
+        trigger: editTrigger,
+        response: editResponse,
+        case_sensitive: editCaseSensitive,
+      });
+      setEditingId(null);
+    }, "Autoresponder updated");
 
   if (loading) {
     return <div className="flex items-center justify-center min-h-[400px]"><RefreshCcw className="w-8 h-8 animate-spin text-primary" /></div>;
@@ -85,21 +109,50 @@ export default function AutoresponderPage({ params }: { params: { guildId: strin
           <CardDescription>{data.items.length ? "Toggle or remove them below." : "Nothing here yet."}</CardDescription>
         </CardHeader>
         <CardContent className="space-y-3">
-          {data.items.map((it) => (
-            <div key={it.id} className="flex flex-col gap-3 rounded-2xl border border-site-ink/5 bg-site-bg p-4 md:flex-row md:items-center">
-              <div className="min-w-0 flex-1">
-                <p className="truncate font-semibold text-site-ink">{it.trigger}</p>
-                <p className="line-clamp-2 whitespace-pre-wrap text-sm text-site-muted">{it.response}</p>
-                {it.case_sensitive && <p className="mt-1 text-[11px] uppercase tracking-widest text-site-faint">Case sensitive</p>}
+          {data.items.map((it) =>
+            editingId === it.id ? (
+              <div key={it.id} className="flex flex-col gap-3 rounded-2xl border border-primary/30 bg-site-bg p-4">
+                <div className="space-y-2">
+                  <Label>Trigger</Label>
+                  <Input value={editTrigger} maxLength={200} onChange={(e) => setEditTrigger(e.target.value)} />
+                </div>
+                <div className="space-y-2">
+                  <Label>Response <span className="text-site-faint">({editResponse.length}/2000)</span></Label>
+                  <Textarea value={editResponse} maxLength={2000} rows={3} onChange={(e) => setEditResponse(e.target.value)} />
+                </div>
+                <div className="flex items-center justify-between gap-3">
+                  <label className="flex items-center gap-3 text-sm text-site-body">
+                    <Switch checked={editCaseSensitive} onCheckedChange={setEditCaseSensitive} /> Case sensitive
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" disabled={busy} onClick={cancelEdit}>
+                      <X className="w-4 h-4" />
+                    </Button>
+                    <Button size="sm" disabled={busy || !editTrigger.trim() || !editResponse.trim()} onClick={() => saveEdit(it.id)} className="gap-2">
+                      <Check className="w-4 h-4" /> Save
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <Switch checked={it.enabled} disabled={busy} onCheckedChange={(v) => run(() => api.updateAutoresponder(params.guildId, it.id, { enabled: v }))} />
-                <Button variant="outline" size="sm" disabled={busy} onClick={() => run(() => api.deleteAutoresponder(params.guildId, it.id), "Removed")}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+            ) : (
+              <div key={it.id} className="flex flex-col gap-3 rounded-2xl border border-site-ink/5 bg-site-bg p-4 md:flex-row md:items-center">
+                <div className="min-w-0 flex-1">
+                  <p className="truncate font-semibold text-site-ink">{it.trigger}</p>
+                  <p className="line-clamp-2 whitespace-pre-wrap text-sm text-site-muted">{it.response}</p>
+                  {it.case_sensitive && <p className="mt-1 text-[11px] uppercase tracking-widest text-site-faint">Case sensitive</p>}
+                </div>
+                <div className="flex items-center gap-3">
+                  <Switch checked={it.enabled} disabled={busy} onCheckedChange={(v) => run(() => api.updateAutoresponder(params.guildId, it.id, { enabled: v }))} />
+                  <Button variant="outline" size="sm" disabled={busy} onClick={() => startEdit(it)}>
+                    <Pencil className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" disabled={busy} onClick={() => run(() => api.deleteAutoresponder(params.guildId, it.id), "Removed")}>
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
               </div>
-            </div>
-          ))}
+            )
+          )}
         </CardContent>
       </Card>
     </div>
