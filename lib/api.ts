@@ -213,6 +213,8 @@ export const api = {
     request<{ status: string }>(`/guilds/${guildId}/tickets/welcome`, { method: "PATCH", body: JSON.stringify(data) }),
   createTicketPanel: (guildId: string, name?: string) =>
     request<{ status: string; id: number }>(`/guilds/${guildId}/tickets/panels`, { method: "POST", body: JSON.stringify({ name }) }),
+  renameTicketPanel: (guildId: string, panelId: number, name: string) =>
+    request<{ status: string; id: number; name: string }>(`/guilds/${guildId}/tickets/panels/${panelId}`, { method: "PATCH", body: JSON.stringify({ name }) }),
   shareTicketPanel: (guildId: string, panelId?: number | null) =>
     request<{ code: string }>(`/guilds/${guildId}/tickets/panels/share${panelId ? `?panel=${panelId}` : ""}`, { method: "POST", body: "{}" }),
   importTicketPanel: (guildId: string, code: string) =>

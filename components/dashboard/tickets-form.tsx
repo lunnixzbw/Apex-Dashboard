@@ -113,6 +113,9 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
   const [editingEmbed, setEditingEmbed] = useState<TicketEmbed | null>(null);
   const [isAdding, setIsAdding] = useState(false);
   const [panelId, setPanelId] = useState<number | null>(initialConfig.panel_id ?? null);
+  const [renamingPanelId, setRenamingPanelId] = useState<number | null>(null);
+  const [renameValue, setRenameValue] = useState("");
+  const [renamingSaving, setRenamingSaving] = useState(false);
   const [presets, setPresets] = useState<{ key: string; name: string; description: string; emoji: string | null; questions: number; added: boolean }[]>([]);
   const [addingPreset, setAddingPreset] = useState<string | null>(null);
   const [welcome, setWelcome] = useState({ title: "", message: "", image_url: "" });
@@ -189,6 +192,28 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
       data: { name: "", emoji: "📩", description: "", staff_roles: [], button_style: 2, discord_category_id: "" } 
     });
     setIsAdding(true);
+  };
+
+  const handleStartRenamePanel = (id: number, currentName: string) => {
+    setRenamingPanelId(id);
+    setRenameValue(currentName);
+  };
+
+  const handleSaveRenamePanel = async () => {
+    if (renamingPanelId == null) return;
+    const name = renameValue.trim();
+    if (!name) { toast.error("Panel name can't be empty"); return; }
+    setRenamingSaving(true);
+    try {
+      await api.renameTicketPanel(guildId, renamingPanelId, name);
+      setConfig((prev) => ({ ...prev, panels: (prev.panels || []).map((p) => (p.id === renamingPanelId ? { ...p, name } : p)) }));
+      setRenamingPanelId(null);
+      toast.success("Panel renamed");
+    } catch (e: any) {
+      toast.error(e?.message || "Could not rename panel");
+    } finally {
+      setRenamingSaving(false);
+    }
   };
 
   const handleRemoveCategory = (index: number) => {
@@ -416,16 +441,46 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
       {/* Panel tabs */}
       {configured && (
         <div className="mb-6 flex flex-wrap items-center gap-2">
-          {(config.panels || []).map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => { setPanelId(p.id); fetchUpdatedConfig(p.id); }}
-              className={`rounded-full border px-4 py-1.5 text-sm font-semibold transition ${p.id === panelId ? "border-primary bg-primary/20 text-site-ink" : "border-site-ink/15 text-site-muted hover:border-site-ink/25"}`}
-            >
-              {p.name}
-            </button>
-          ))}
+          {(config.panels || []).map((p) =>
+            renamingPanelId === p.id ? (
+              <div key={p.id} className="flex items-center gap-1 rounded-full border border-primary/40 bg-primary/10 px-2 py-1">
+                <Input
+                  autoFocus
+                  value={renameValue}
+                  onChange={(e) => setRenameValue(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSaveRenamePanel();
+                    if (e.key === "Escape") setRenamingPanelId(null);
+                  }}
+                  maxLength={60}
+                  className="h-7 w-32 text-sm"
+                />
+                <button type="button" disabled={renamingSaving} onClick={handleSaveRenamePanel} className="p-1 rounded-full hover:bg-site-ink/10 text-primary">
+                  <Save className="h-3.5 w-3.5" />
+                </button>
+                <button type="button" onClick={() => setRenamingPanelId(null)} className="p-1 rounded-full hover:bg-site-ink/10 text-site-muted">
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            ) : (
+              <div
+                key={p.id}
+                className={`group flex items-center gap-1 rounded-full border px-4 py-1.5 text-sm font-semibold transition ${p.id === panelId ? "border-primary bg-primary/20 text-site-ink" : "border-site-ink/15 text-site-muted hover:border-site-ink/25"}`}
+              >
+                <button type="button" onClick={() => { setPanelId(p.id); fetchUpdatedConfig(p.id); }}>
+                  {p.name}
+                </button>
+                <button
+                  type="button"
+                  title="Rename panel"
+                  onClick={() => handleStartRenamePanel(p.id, p.name)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-site-faint hover:text-primary"
+                >
+                  <Edit3 className="h-3 w-3" />
+                </button>
+              </div>
+            )
+          )}
           <Button
             size="sm" variant="outline" className="h-8 gap-1 text-xs border-primary/20 text-primary hover:bg-primary/10"
             disabled={saving}
@@ -466,7 +521,7 @@ export function TicketsForm({ initialConfig, guildId, channels = [], roles = [] 
           <Button
             size="sm" variant="outline" className="h-8 gap-1 text-xs"
             onClick={async () => {
-              const code = window.prompt("Paste a panel ID (APX-XXXXXXXX) from any server:");
+              const code = window.prompt("Paste a panel ID (ZVN-XXXXXXXX) from any server:");
               if (!code) return;
               try {
                 const r = await api.importTicketPanel(guildId, code.trim());
