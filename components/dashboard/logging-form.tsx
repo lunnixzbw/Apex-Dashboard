@@ -27,7 +27,11 @@ import {
   ChevronRight,
   BellRing,
   Info,
-  PlusCircle
+  PlusCircle,
+  Server,
+  Smile,
+  BarChart3,
+  Webhook
 } from "lucide-react";
 import { toast } from "sonner";
 import { api } from "@/lib/api";
@@ -39,11 +43,15 @@ import { LoggingConfig, DiscordChannel } from "@/types/api";
 
 const LOG_CATEGORIES = [
   { id: "message_events", name: "Message Events", icon: MessageSquare, description: "Log message deletions, edits, and bulk removals." },
-  { id: "join_leave_events", name: "Join & Leave Events", icon: UserPlus, description: "Track when members join or leave the server." },
-  { id: "member_moderation", name: "Moderation Events", icon: ShieldAlert, description: "Log kicks, bans, and timeout updates." },
   { id: "voice_events", name: "Voice Events", icon: Mic, description: "Track members joining, leaving, or moving voice channels." },
-  { id: "role_events", name: "Role Changes", icon: Settings, description: "Log role creation, deletion, and permission updates." },
-  { id: "channel_events", name: "Channel Changes", icon: Hash, description: "Track channel creation, deletion, and settings updates." },
+  { id: "join_leave_events", name: "User Events", icon: UserPlus, description: "Track when members join, leave, or get their roles/nickname updated." },
+  { id: "server_events", name: "Server Events", icon: Server, description: "Log server name, owner, and settings changes." },
+  { id: "channel_events", name: "Channel Events", icon: Hash, description: "Track channel creation, deletion, and settings updates." },
+  { id: "emoji_events", name: "Emoji Events", icon: Smile, description: "Log emoji and sticker creation or removal." },
+  { id: "role_events", name: "Role Events", icon: Settings, description: "Log role creation, deletion, and permission updates." },
+  { id: "poll_events", name: "Poll Events", icon: BarChart3, description: "Log polls created in the server." },
+  { id: "webhook_events", name: "Webhook Events", icon: Webhook, description: "Log webhook creation, updates, and deletion." },
+  { id: "member_moderation", name: "Moderation Events", icon: ShieldAlert, description: "Log kicks, bans, and timeout updates." },
 ];
 
 interface LoggingFormProps {
